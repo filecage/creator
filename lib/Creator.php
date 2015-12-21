@@ -1,14 +1,13 @@
 <?php
 
-    namespace treething;
+    namespace Creator;
 
     use ReflectionException;
     use ReflectionClass;
     use ReflectionMethod;
     use ReflectionParameter;
-    use Slim\Container;
 
-    class DependencyInjector {
+    class Creator {
 
         /**
          * @var array
@@ -18,17 +17,7 @@
         /**
          * @var array
          */
-        private $containerLookupMap = [];
-
-        /**
-         * @var array
-         */
         private $primitiveResourceRegistry = [];
-
-        /**
-         * @var Container
-         */
-        private $container;
 
         /**
          * @param string $className
@@ -57,26 +46,6 @@
         private function resolveClassAgainstRegistry ($className) {
             if (isset($this->classResourceRegistry[$className])) {
                 return $this->classResourceRegistry[$className];
-            }
-
-            if (isset($this->container)) {
-                // update container lookup map
-                $unknownContainerKeys = array_diff($this->container->keys(), array_column($this->containerLookupMap, 'key'));
-                foreach ($unknownContainerKeys as $key) {
-                    $object = $this->container->get($key);
-                    if (!is_object($object)) {
-                        continue;
-                    }
-
-                    $this->containerLookupMap[get_class($object)] = [
-                        'key' => $key,
-                        'object' => $object
-                    ];
-                }
-
-                if (isset($this->containerLookupMap[$className])) {
-                    return $this->containerLookupMap[$className]['object'];
-                }
             }
 
             return null;
@@ -230,16 +199,6 @@
         function registerClassResource ($instance, $classResourceKey = null) {
             $classResourceKey = $classResourceKey ?: get_class($instance);
             $this->classResourceRegistry[$classResourceKey] = $instance;
-
-            return $this;
-        }
-
-        /**
-         * @param Container $container
-         * @return $this
-         */
-        function registerDiContainer (Container $container) {
-            $this->container = $container;
 
             return $this;
         }
