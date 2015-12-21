@@ -2,6 +2,7 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\Unresolvable;
     use ReflectionException;
     use ReflectionClass;
     use ReflectionMethod;
@@ -24,6 +25,7 @@
          * @param bool $bypassClassResourceRegistry Whether the class will be loaded from (or stored to) registry
          *
          * @throws \Exception
+         * @throws Unresolvable
          * @return object
          */
         function create ($className, $bypassClassResourceRegistry = false) {
@@ -43,6 +45,11 @@
             return $object;
         }
 
+        /**
+         * @param string $className
+         *
+         * @return object
+         */
         private function resolveClassAgainstRegistry ($className) {
             if (isset($this->classResourceRegistry[$className])) {
                 return $this->classResourceRegistry[$className];
@@ -55,20 +62,20 @@
          * @param ReflectionClass $reflector
          *
          * @return object
-         * @throws \Exception
+         * @throws Unresolvable
          */
         private function createInstanceFromUninstantiableReflectionClass (ReflectionClass $reflector) {
             if ($reflector->implementsInterface(Interfaces\Singleton::class)) {
                 return $this->getInstanceFromSingleton($reflector);
             } else {
-                throw new \Exception('Class is neither instantiable nor implements Singleton interface', $reflector->getName());
+                throw new Unresolvable('Class is neither instantiable nor implements Singleton interface', $reflector->getName());
             }
         }
 
         /**
          * @param ReflectionClass $reflector
          *
-         * @throws \Exception
+         * @throws Unresolvable
          * @return object
          */
         private function createInstanceFromReflectionClass (ReflectionClass $reflector) {
@@ -80,7 +87,7 @@
             try {
                 return $reflector->newInstanceArgs($this->collectAndResolveMethodDependencies($constructor));
             } catch (ReflectionException $e) {
-                throw new \Exception('Dependencies can not be resolved: ' . $e->getMessage(), $reflector->getName());
+                throw new Unresolvable('Dependencies can not be resolved: ' . $e->getMessage(), $reflector->getName());
             }
         }
 
@@ -116,7 +123,7 @@
          * @param ReflectionParameter $parameter
          *
          * @return mixed|object
-         * @throws \Exception
+         * @throws Unresolvable
          * @throws ReflectionException
          */
         private function resolveParameterDependency (ReflectionParameter $parameter) {
@@ -129,7 +136,7 @@
                 $primitiveResource = $this->getPrimitiveResource($parameter->getName());
 
                 return $primitiveResource;
-            } catch (\Exception $e) {
+            } catch (Unresolvable $e) {
                 if ($parameter->isDefaultValueAvailable()) {
                     return $parameter->getDefaultValue();
                 }
@@ -154,11 +161,11 @@
          * @param string $resourceKey
          *
          * @return mixed
-         * @throws \Exception
+         * @throws Unresolvable
          */
         private function getPrimitiveResource ($resourceKey) {
             if (!isset($this->primitiveResourceRegistry[$resourceKey])) {
-                throw new \Exception('Tried to load dependency "' . $resourceKey . '" with unknown primitive resource');
+                throw new Unresolvable('Tried to load dependency "' . $resourceKey . '" with unknown primitive resource');
             }
 
             return $this->primitiveResourceRegistry[$resourceKey];
