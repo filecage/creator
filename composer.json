@@ -1,0 +1,11 @@
+{
+    "name": "tholabs/creator",
+    "description": "creator is a simple PHP dependency injection that works with typehints",
+    "authors": [
+        {
+            "name": "David Beuchert",
+            "email": "mail@dbeuchert.com"
+        }
+    ],
+    "require": {}
+}
