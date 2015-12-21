@@ -7,5 +7,10 @@
             "email": "mail@dbeuchert.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Creator\\": "lib/"
+        }
+    }
 }
