@@ -1,6 +1,12 @@
 # creator
 creator is a simple PHP dependency injection that works with typehints and Reflection classes
 
+* [Installation](#installation)
+* [Basic Usage](#basic-usage)
+* [Uninstantiable Classes](#uninstantiable-classes)
+* [Registering Resources](#registering-resources)
+* [Exceptions](#exceptions)
+
 ## Installation
 via composer (submit to packagist.org pending)
 
@@ -26,14 +32,14 @@ assuming our MyClass looks like this:
 Creator will walk up the dependency tree and resolve any class which has no known instance yet.
 
 
-## Uninstantiable classes
+## Uninstantiable Classes
 ### Singletons
 Singletons can be resolved if they implement the `Creator\Interfaces\Singleton` interface.
 ### Abstracts, Interfaces
 If Creator stumbles upon an interface or an abstract class, it will try to find a factory by using the entities name with Factory, i.e. for `Foo\Bar\MyInterface` Creator will try to find a `Foo\Bar\MyInterfaceFactory`, which has to implement the `Creator\Interfaces\Factory`. Factories are being created via `Creator::create` and can therefore contain further dependencies.
 
 
-## Registering resources
+## Registering Resources
 ### Classes
 If you want creator to use a certain instance of a class, you can register any object to Creator. It will then use this instance for any upcoming creation.
 ````php
