@@ -3,6 +3,7 @@
     namespace Creator;
 
     use Creator\Exceptions\Unresolvable;
+    use Creator\Interfaces\Factory;
     use ReflectionException;
     use ReflectionClass;
     use ReflectionMethod;
@@ -67,6 +68,10 @@
         private function createInstanceFromUninstantiableReflectionClass (ReflectionClass $reflector) {
             if ($reflector->implementsInterface(Interfaces\Singleton::class)) {
                 return $this->getInstanceFromSingleton($reflector);
+            } elseif ($reflector->isInterface() || $reflector->isAbstract()) {
+                $factoryReflector = $this->getFactoryClassReflector($reflector);
+
+                return $this->createInstanceFromFactoryReflector($reflector, $factoryReflector);
             } else {
                 throw new Unresolvable('Class is neither instantiable nor implements Singleton interface', $reflector->getName());
             }
@@ -91,8 +96,25 @@
             }
         }
 
+        /**
+         * @param ReflectionClass $reflector
+         * @param ReflectionClass $factoryReflector
+         *
+         * @return $this
+         * @throws Unresolvable
+         */
         private function createInstanceFromFactoryReflector (ReflectionClass $reflector, ReflectionClass $factoryReflector) {
-            // todo: implement with interface and type check
+            $factory = $this->createInstanceFromReflectionClass($factoryReflector);
+            if (!$factory instanceof Factory) {
+                throw new Unresolvable('Factory ' . $factoryReflector->getName() . ' does not implement required interface NC_Factory', $reflector->getName());
+            }
+
+            $class = $factory->createInstance();
+            if (!$reflector->isInstance($class)) {
+                throw new Unresolvable('Create method of factory ' . $factoryReflector->getName() . ' did not return instance of ' . $reflector->getName() . ' class', $reflector->getName());
+            }
+
+            return $class;
         }
 
         /**
