@@ -20,7 +20,7 @@ via composer (submit to packagist.org pending)
     $myInstance = $creator->create(MyClass::class);
 ````
 ### With recursive dependencies
-assuming our MyClass looks like this:
+assuming our `MyClass` looks like this:
 ````php
 <?php
     class MyClass {
@@ -74,4 +74,4 @@ If a constructor argument has a default value and Creator can not find a matchin
 
 
 ## Exceptions
-If Creator is unable to resolve a dependency, it will throw a `Creator\Exceptions\Unresolveable`.
+If Creator is unable to resolve a dependency, it will throw a `Creator\Exceptions\Unresolvable`.
