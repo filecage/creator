@@ -2,15 +2,22 @@
 creator is a simple PHP dependency injection that works with typehints and Reflection classes
 
 * [Installation](#installation)
+* [Testing](#testing)
 * [Basic Usage](#basic-usage)
 * [Uninstantiable Classes](#uninstantiable-classes)
 * [Registering Resources](#registering-resources)
 * [Exceptions](#exceptions)
 
 ## Installation
-via composer
+via [composer](https://getcomposer.org/)
 ````bash
 $ composer require tholabs/creator
+````
+
+## Testing
+via [phpunit](https://phpunit.de/)
+````bash
+$ phpunit
 ````
 
 
