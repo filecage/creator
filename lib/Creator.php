@@ -106,7 +106,7 @@
         private function createInstanceFromFactoryReflector (ReflectionClass $reflector, ReflectionClass $factoryReflector) {
             $factory = $this->createInstanceFromReflectionClass($factoryReflector);
             if (!$factory instanceof Factory) {
-                throw new Unresolvable('Factory ' . $factoryReflector->getName() . ' does not implement required interface NC_Factory', $reflector->getName());
+                throw new Unresolvable('Factory ' . $factoryReflector->getName() . ' does not implement required interface Creator\\Interfaces\\Factory', $reflector->getName());
             }
 
             $class = $factory->createInstance();
