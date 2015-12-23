@@ -33,8 +33,7 @@
             $object = $this->resolveClassAgainstRegistry($className);
 
             if (!$object || $bypassClassResourceRegistry) {
-                $reflector = new ReflectionClass($className);
-                $object = ($reflector->isInstantiable()) ? $this->createInstanceFromReflectionClass($reflector) : $this->createInstanceFromUninstantiableReflectionClass($reflector);
+                $object = $this->createInstance(new ReflectionClass($className));
 
                 if ($bypassClassResourceRegistry) {
                     return $object;
@@ -44,6 +43,10 @@
             }
 
             return $object;
+        }
+
+        private function createInstance(ReflectionClass $reflector) {
+            return ($reflector->isInstantiable()) ? $this->createInstanceFromReflectionClass($reflector) : $this->createInstanceFromUninstantiableReflectionClass($reflector);
         }
 
         /**
@@ -104,7 +107,7 @@
          * @throws Unresolvable
          */
         private function createInstanceFromFactoryReflector (ReflectionClass $reflector, ReflectionClass $factoryReflector) {
-            $factory = $this->createInstanceFromReflectionClass($factoryReflector);
+            $factory = $this->createInstance($factoryReflector);
             if (!$factory instanceof Factory) {
                 throw new Unresolvable('Factory ' . $factoryReflector->getName() . ' does not implement required interface Creator\\Interfaces\\Factory', $reflector->getName());
             }
