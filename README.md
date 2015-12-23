@@ -2,6 +2,7 @@
 creator is a simple PHP dependency injection that works with typehints and Reflection classes
 
 * [Installation](#installation)
+* [Testing](#testing)
 * [Basic Usage](#basic-usage)
 * [Uninstantiable Classes](#uninstantiable-classes)
 * [Registering Resources](#registering-resources)
