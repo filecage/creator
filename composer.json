@@ -5,9 +5,19 @@
     "authors": [
         {
             "name": "David Beuchert",
-            "email": "mail@dbeuchert.com"
+            "email": "mail@dbeuchert.com",
+            "homepage": "https://github.com/filecage"
+        },
+        {
+            "name": "Manuel Ernst",
+            "email": "seriousstuff@gmx.de",
+            "homepage": "https://github.com/seriousManual"
         }
     ],
+    "support": {
+        "source": "https://github.com/filecage/creator",
+        "issues": "https://github.com/filecage/creator/issues"
+    },
     "require": {},
     "autoload": {
         "psr-4": {
