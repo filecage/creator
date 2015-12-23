@@ -206,14 +206,14 @@
          * @param ReflectionClass $reflector
          *
          * @return ReflectionClass
-         * @throws \Exception
+         * @throws Unresolvable
          */
         private function getFactoryClassReflector (ReflectionClass $reflector) {
             $factoryClassName = $this->buildFactoryClassName($reflector->getName());
             try {
                 $factoryClass = new ReflectionClass($factoryClassName);
             } catch (ReflectionException $e) {
-                throw new \Exception('Can not load factory class "' . $factoryClassName . '": ' . $e->getMessage(), $reflector->getName());
+                throw new Unresolvable('Can not load factory class "' . $factoryClassName . '": ' . $e->getMessage(), $reflector->getName());
             }
 
             return $factoryClass;
