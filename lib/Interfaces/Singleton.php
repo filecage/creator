@@ -7,6 +7,6 @@
         /**
          * @return $this
          */
-        function getInstance();
+        static function getInstance();
 
     }
