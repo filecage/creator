@@ -13,6 +13,12 @@ via composer
 $ composer require tholabs/creator
 ````
 
+## Testing
+via [phpunit](https://phpunit.de/)
+````bash
+$ phpunit
+````
+
 
 ## Basic Usage
 ### With class constant
