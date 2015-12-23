@@ -8,7 +8,7 @@ creator is a simple PHP dependency injection that works with typehints and Refle
 * [Exceptions](#exceptions)
 
 ## Installation
-via composer
+via [composer](https://getcomposer.org/)
 ````bash
 $ composer require tholabs/creator
 ````
