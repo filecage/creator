@@ -7,12 +7,12 @@
         /**
          * @var string
          */
-        private $message;
+        protected $message;
 
         /**
          * @var string
          */
-        private $class;
+        protected $class;
 
         /**
          * @param string $message
