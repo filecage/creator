@@ -70,6 +70,12 @@
             return $this;
         }
 
+        /**
+         * @param ReflectionClass $reflector
+         *
+         * @return object
+         * @throws Unresolvable
+         */
         private function createInstance(ReflectionClass $reflector) {
             return ($reflector->isInstantiable()) ? $this->createInstanceFromReflectionClass($reflector) : $this->createInstanceFromUninstantiableReflectionClass($reflector);
         }
