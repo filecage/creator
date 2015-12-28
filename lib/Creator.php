@@ -45,6 +45,31 @@
             return $object;
         }
 
+        /**
+         * @param object $instance
+         * @param string $classResourceKey
+         *
+         * @return $this
+         */
+        function registerClassResource ($instance, $classResourceKey = null) {
+            $classResourceKey = $classResourceKey ?: get_class($instance);
+            $this->classResourceRegistry[$classResourceKey] = $instance;
+
+            return $this;
+        }
+
+        /**
+         * @param string $resourceKey
+         * @param mixed $value
+         *
+         * @return $this
+         */
+        function registerPrimitiveResource ($resourceKey, $value) {
+            $this->primitiveResourceRegistry[$resourceKey] = $value;
+
+            return $this;
+        }
+
         private function createInstance(ReflectionClass $reflector) {
             return ($reflector->isInstantiable()) ? $this->createInstanceFromReflectionClass($reflector) : $this->createInstanceFromUninstantiableReflectionClass($reflector);
         }
@@ -222,29 +247,4 @@
             return $factoryClass;
         }
 
-        /**
-         * @param object $instance
-         * @param string $classResourceKey
-         *
-         * @return $this
-         */
-        function registerClassResource ($instance, $classResourceKey = null) {
-            $classResourceKey = $classResourceKey ?: get_class($instance);
-            $this->classResourceRegistry[$classResourceKey] = $instance;
-
-            return $this;
-        }
-
-        /**
-         * @param string $resourceKey
-         * @param mixed $value
-         *
-         * @return $this
-         */
-        function registerPrimitiveResource ($resourceKey, $value) {
-            $this->primitiveResourceRegistry[$resourceKey] = $value;
-
-            return $this;
-        }
-        
     }
