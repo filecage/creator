@@ -246,8 +246,5 @@
 
             return $this;
         }
-
-        function getCacheCount () {
-            return count($this->classResourceRegistry);
-        }
+        
     }
