@@ -58,4 +58,19 @@
             $this->assertSame($fromDefault, $instance->getFromDefault());
         }
 
+        function testExpectsDifferentCreatedInstanceButSameDependency () {
+            $simpleInstance = new SimpleClass();
+
+            $this->creator->registerClassResource($simpleInstance);
+
+            /** @var ExtendedClass $a */
+            $a = $this->creator->create(ExtendedClass::class, true);
+            /** @var ExtendedClass $b */
+            $b = $this->creator->create(ExtendedClass::class, true);
+
+            $this->assertNotSame($a, $b);
+            $this->assertSame($simpleInstance, $a->getSimpleClass());
+            $this->assertSame($simpleInstance, $b->getSimpleClass());
+        }
+
     }
