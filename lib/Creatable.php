@@ -2,7 +2,7 @@
 
     namespace Creator;
 
-    class Creatable {
+    class Creatable extends Invokable {
 
         /**
          * @var string
@@ -16,10 +16,12 @@
 
         /**
          * @param string $className
+         * @param string $creationMethodName
          */
-        function __construct ($className) {
+        function __construct ($className, $creationMethodName = null) {
             $this->className = $className;
             $this->reflectionClass = new \ReflectionClass($className);
+            parent::__construct($creationMethodName !== null ? $this->reflectionClass->getMethod($creationMethodName) : $this->reflectionClass->getConstructor());
         }
 
         /**
