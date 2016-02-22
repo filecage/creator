@@ -51,6 +51,18 @@
         }
 
         /**
+         * @param object $instance
+         * @param null $classResourceKey
+         *
+         * @return $this
+         */
+        function with ($instance, $classResourceKey = null) {
+            $this->injectionRegistry->registerClassResource($instance, $classResourceKey);
+
+            return $this;
+        }
+
+        /**
          * @param ReflectionClass $reflector
          *
          * @return object

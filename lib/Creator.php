@@ -31,6 +31,17 @@
         }
 
         /**
+         * @param string $className
+         * @param bool $bypassClassResourceRegistry
+         *
+         * @throws Unresolvable
+         * @return Creation
+         */
+        function createInjected ($className, $bypassClassResourceRegistry = false) {
+            return new Creation($className, ($bypassClassResourceRegistry) ? new ResourceRegistry() : $this->resourceRegistry);
+        }
+
+        /**
          * @param object $instance
          * @param string $classResourceKey
          *
