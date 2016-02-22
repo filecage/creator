@@ -43,6 +43,13 @@
         }
 
         /**
+         * @return int
+         */
+        function getRegisteredClassResourcesCount () {
+            return count($this->classResources);
+        }
+
+        /**
          * @param string $resourceKey
          * @param mixed $value
          *

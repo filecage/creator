@@ -65,4 +65,11 @@
             return $this;
         }
 
+        /**
+         * @return int
+         */
+        function getCacheCount () {
+            return $this->resourceRegistry->getRegisteredClassResourcesCount();
+        }
+
     }
