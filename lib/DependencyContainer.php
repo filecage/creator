@@ -5,7 +5,7 @@
     class DependencyContainer {
 
         /**
-         * @var \ReflectionParameter
+         * @var \ReflectionParameter[]
          */
         private $dependencies = [];
 
@@ -22,7 +22,7 @@
         }
 
         /**
-         * @return \ReflectionParameter
+         * @return \ReflectionParameter[]
          */
         function getDependencies () {
             return $this->dependencies;
