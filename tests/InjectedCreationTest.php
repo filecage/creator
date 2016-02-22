@@ -62,4 +62,28 @@
             $this->assertSame($simpleInstance, $extendedInstance->getSimpleClass());
         }
 
+        function testExpectsDifferentInstancesWhenUsingInjectedAndDefaultCreation () {
+            $simpleInstance = new SimpleClass();
+
+            // Right order is important, first class would be registered to registry
+            /** @var ExtendedClass $extendedInstance */
+            $extendedInstance = $this->creator->createInjected(ExtendedClass::class)
+                ->with($simpleInstance)
+                ->create();
+
+            /** @var ExtendedClass $secondExtendedInstance */
+            $secondExtendedInstance = $this->creator->create(ExtendedClass::class);
+
+            /** @var ExtendedClass $thirdExtendedInstance */
+            $thirdExtendedInstance = $this->creator->createInjected(ExtendedClass::class)
+                ->with($simpleInstance)
+                ->create();
+
+            $this->assertSame($simpleInstance, $extendedInstance->getSimpleClass());
+            $this->assertNotSame($extendedInstance, $secondExtendedInstance);
+            $this->assertNotSame($simpleInstance, $secondExtendedInstance->getSimpleClass());
+            $this->assertNotSame($extendedInstance, $thirdExtendedInstance);
+            $this->assertNotSame($secondExtendedInstance, $thirdExtendedInstance);
+        }
+
     }
