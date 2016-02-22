@@ -41,9 +41,10 @@
          * @return object
          */
         function create () {
+            $creatable = new Creatable($this->className);
             $instance = $this->resourceRegistry->getClassResource($this->className);
             if (!$instance) {
-                $instance = $this->createInstance(new ReflectionClass($this->className));
+                $instance = $this->createInstance($creatable);
                 $this->resourceRegistry->registerClassResource($instance);
             }
 
@@ -63,40 +64,40 @@
         }
 
         /**
-         * @param ReflectionClass $reflector
+         * @param Creatable $creatable
          *
          * @return object
          * @throws Unresolvable
          */
-        private function createInstance(ReflectionClass $reflector) {
-            return ($reflector->isInstantiable()) ? $this->createInstanceFromReflectionClass($reflector) : $this->createInstanceFromUninstantiableReflectionClass($reflector);
+        private function createInstance(Creatable $creatable) {
+            return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
         }
 
         /**
-         * @param ReflectionClass $reflector
+         * @param Creatable $creatable
          *
          * @return object
          * @throws Unresolvable
          */
-        private function createInstanceFromUninstantiableReflectionClass (ReflectionClass $reflector) {
+        private function createInstanceFromUninstantiableCreatable (Creatable $creatable) {
+            $reflector = $creatable->getReflectionClass();
             if ($reflector->implementsInterface(Interfaces\Singleton::class)) {
                 return $this->getInstanceFromSingleton($reflector);
             } elseif ($reflector->isInterface() || $reflector->isAbstract()) {
-                $factoryReflector = $this->getFactoryClassReflector($reflector);
-
-                return $this->createInstanceFromFactoryReflector($reflector, $factoryReflector);
+                return $this->createInstanceFromFactoryCreatable($creatable, $this->getFactoryClassCreatable($reflector));
             } else {
                 throw new Unresolvable('Class is neither instantiable nor implements Singleton interface', $reflector->getName());
             }
         }
 
         /**
-         * @param ReflectionClass $reflector
+         * @param Creatable $creatable
          *
-         * @throws Unresolvable
          * @return object
+         * @throws Unresolvable
          */
-        private function createInstanceFromReflectionClass (ReflectionClass $reflector) {
+        private function createInstanceFromCreatable (Creatable $creatable) {
+            $reflector = $creatable->getReflectionClass();
             $constructor = $reflector->getConstructor();
             if (!$constructor) {
                 return $reflector->newInstance();
@@ -110,14 +111,17 @@
         }
 
         /**
-         * @param ReflectionClass $reflector
-         * @param ReflectionClass $factoryReflector
+         * @param Creatable $creatable
+         * @param Creatable $factory
          *
-         * @return $this
+         * @return object
          * @throws Unresolvable
          */
-        private function createInstanceFromFactoryReflector (ReflectionClass $reflector, ReflectionClass $factoryReflector) {
-            $factory = $this->createInstance($factoryReflector);
+        private function createInstanceFromFactoryCreatable (Creatable $creatable, Creatable $factory) {
+            $factoryReflector = $factory->getReflectionClass();
+            $reflector = $creatable->getReflectionClass();
+
+            $factory = $this->createInstance($factory);
             if (!$factory instanceof Factory) {
                 throw new Unresolvable('Factory ' . $factoryReflector->getName() . ' does not implement required interface Creator\\Interfaces\\Factory', $reflector->getName());
             }
@@ -216,17 +220,17 @@
         /**
          * @param ReflectionClass $reflector
          *
-         * @return ReflectionClass
+         * @return Creatable
          * @throws Unresolvable
          */
-        private function getFactoryClassReflector (ReflectionClass $reflector) {
+        private function getFactoryClassCreatable (ReflectionClass $reflector) {
             $factoryClassName = $this->buildFactoryClassName($reflector->getName());
             try {
-                $factoryClass = new ReflectionClass($factoryClassName);
+                $factoryCreatable = new Creatable($factoryClassName);
             } catch (ReflectionException $e) {
                 throw new Unresolvable('Can not load factory class "' . $factoryClassName . '": ' . $e->getMessage(), $reflector->getName());
             }
 
-            return $factoryClass;
+            return $factoryCreatable;
         }
     }
