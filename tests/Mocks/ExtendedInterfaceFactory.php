@@ -2,7 +2,9 @@
 
     namespace Creator\Tests\Mocks;
 
-    class ExtendedClass implements ExtendedInterface {
+    use Creator\Interfaces\Factory;
+
+    class ExtendedInterfaceFactory implements Factory {
 
         /**
          * @var SimpleClass
@@ -17,9 +19,10 @@
         }
 
         /**
-         * @return SimpleClass
+         * @return ExtendedClass
          */
-        function getSimpleClass () {
-            return $this->simpleClass;
+        function createInstance () {
+            return new ExtendedClass($this->simpleClass);
         }
+
     }
