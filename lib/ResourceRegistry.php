@@ -91,4 +91,16 @@
             return false;
         }
 
+        /**
+         * @param string $classResourceKey
+         *
+         * @return ResourceRegistry
+         */
+        function cloneWithout ($classResourceKey) {
+            $clone = clone $this;
+            unset($clone->classResources[$classResourceKey]);
+
+            return $clone;
+        }
+
     }
