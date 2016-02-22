@@ -27,7 +27,7 @@
          * @return object
          */
         function create ($className, $forceInstance = false) {
-            return (new Creation($className, ($forceInstance) ? new ResourceRegistry() : $this->resourceRegistry))->create();
+            return (new Creation($className, ($forceInstance) ? $this->resourceRegistry->cloneWithout($className) : $this->resourceRegistry))->create();
         }
 
         /**
@@ -38,7 +38,7 @@
          * @return Creation
          */
         function createInjected ($className, $forceInstance = false) {
-            return new Creation($className, ($forceInstance) ? new ResourceRegistry() : $this->resourceRegistry);
+            return new Creation($className, ($forceInstance) ? $this->resourceRegistry->cloneWithout($className) : $this->resourceRegistry);
         }
 
         /**
