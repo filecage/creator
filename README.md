@@ -4,6 +4,7 @@ creator is a simple PHP dependency injection that works with typehints and Refle
 * [Installation](#installation)
 * [Testing](#testing)
 * [Basic Usage](#basic-usage)
+* [Injected Instances](#injected-instances)
 * [Uninstantiable Classes](#uninstantiable-classes)
 * [Registering Resources](#registering-resources)
 * [Exceptions](#exceptions)
@@ -41,6 +42,23 @@ assuming our `MyClass` looks like this:
 ````
 Creator will walk up the dependency tree and resolve any class which has no known instance yet.
 
+## Injected Instances
+Creator is able to use a second and independent resource registry for each creation process. This allows bigger dependency requirements without affecting the handiness of classes.
+````php
+<?php
+    $anotherClass = new AnotherClass();
+    
+    $creator = new Creator\Creator;
+    $myClass = $creator->createInjected(MyClass::class)->with($anotherClass)->create();
+    
+    if ($myClass->anotherClass === $anotherClass) {
+        echo 'We are the same!';
+    } else {
+        echo 'We are not the same :-(';
+    }
+````
+Any other depdendency of MyClass is being resolved the usual way, i.e. looked up via the ResourceRegistry and, if there is no instance yet, it's being created with the same injected resources.
+Creator is able to collect dependency signatures and thereby only re-creates instances that really require an injected dependency.
 
 ## Uninstantiable Classes
 ### Singletons
