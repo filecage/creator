@@ -20,25 +20,25 @@
 
         /**
          * @param string $className
-         * @param bool $bypassClassResourceRegistry Whether the class will be loaded from (or stored to) registry
+         * @param bool $forceInstance Whether the class will be loaded from (or stored to) registry
          *
          * @throws \Exception
          * @throws Unresolvable
          * @return object
          */
-        function create ($className, $bypassClassResourceRegistry = false) {
-            return (new Creation($className, ($bypassClassResourceRegistry) ? new ResourceRegistry() : $this->resourceRegistry))->create();
+        function create ($className, $forceInstance = false) {
+            return (new Creation($className, ($forceInstance) ? new ResourceRegistry() : $this->resourceRegistry))->create();
         }
 
         /**
          * @param string $className
-         * @param bool $bypassClassResourceRegistry
+         * @param bool $forceInstance
          *
          * @throws Unresolvable
          * @return Creation
          */
-        function createInjected ($className, $bypassClassResourceRegistry = false) {
-            return new Creation($className, ($bypassClassResourceRegistry) ? new ResourceRegistry() : $this->resourceRegistry);
+        function createInjected ($className, $forceInstance = false) {
+            return new Creation($className, ($forceInstance) ? new ResourceRegistry() : $this->resourceRegistry);
         }
 
         /**
