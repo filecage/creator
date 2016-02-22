@@ -209,26 +209,17 @@
         }
 
         /**
-         * @param string $className
-         *
-         * @return string
-         */
-        private function buildFactoryClassName ($className) {
-            return sprintf('%sFactory', $className);
-        }
-
-        /**
          * @param ReflectionClass $reflector
          *
          * @return Creatable
          * @throws Unresolvable
          */
         private function getFactoryClassCreatable (ReflectionClass $reflector) {
-            $factoryClassName = $this->buildFactoryClassName($reflector->getName());
+            $className = $reflector->getName();
             try {
-                $factoryCreatable = new Creatable($factoryClassName);
+                $factoryCreatable = new FactoryCreatable($className);
             } catch (ReflectionException $e) {
-                throw new Unresolvable('Can not load factory class "' . $factoryClassName . '": ' . $e->getMessage(), $reflector->getName());
+                throw new Unresolvable('Can not load factory for uninstantiable class "' . $className . '": ' . $e->getMessage(), $reflector->getName());
             }
 
             return $factoryCreatable;
