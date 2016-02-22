@@ -3,6 +3,7 @@
     namespace Creator;
 
     class FactoryCreatable extends Creatable {
+
         /**
          * @param string $className
          */
@@ -18,4 +19,5 @@
         private function buildFactoryClassName ($className) {
             return sprintf('%sFactory', $className);
         }
+
     }

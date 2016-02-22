@@ -14,7 +14,7 @@
         /**
          * @param ResourceRegistry $resourceRegistry
          */
-        function __construct(ResourceRegistry $resourceRegistry = null) {
+        function __construct (ResourceRegistry $resourceRegistry = null) {
             $this->resourceRegistry = ($resourceRegistry) ?: new ResourceRegistry();
         }
 

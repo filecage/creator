@@ -3,6 +3,7 @@
     namespace Creator;
 
     class Creatable {
+
         /**
          * @var string
          */
