@@ -25,6 +25,19 @@
         }
 
         /**
+         * @param array|null $args
+         *
+         * @return object
+         */
+        function invoke (array $args = null) {
+            if ($args !== null) {
+                return $this->reflectionClass->newInstanceArgs($args);
+            }
+
+            return $this->reflectionClass->newInstance();
+        }
+
+        /**
          * @return \ReflectionClass
          */
         function getReflectionClass () {
