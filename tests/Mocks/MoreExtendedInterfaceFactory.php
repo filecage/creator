@@ -2,7 +2,9 @@
 
     namespace Creator\Tests\Mocks;
 
-    class MoreExtendedClass implements MoreExtendedInterface {
+    use Creator\Interfaces\Factory;
+
+    class MoreExtendedInterfaceFactory implements Factory {
 
         /**
          * @var ExtendedClass
@@ -29,24 +31,10 @@
         }
 
         /**
-         * @return ExtendedClass
+         * @return MoreExtendedClass
          */
-        function getExtendedClass () {
-            return $this->extendedClass;
-        }
-
-        /**
-         * @return SimpleClass
-         */
-        function getSimpleClass () {
-            return $this->simpleClass;
-        }
-
-        /**
-         * @return AnotherSimpleClass
-         */
-        function getAnotherSimpleClass () {
-            return $this->anotherSimpleClass;
+        function createInstance () {
+            return new MoreExtendedClass($this->extendedClass, $this->simpleClass, $this->anotherSimpleClass);
         }
 
     }
