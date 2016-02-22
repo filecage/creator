@@ -4,6 +4,7 @@
 
     use Creator\Interfaces\Factory;
 
+
     class MoreExtendedInterfaceFactory implements Factory {
 
         /**

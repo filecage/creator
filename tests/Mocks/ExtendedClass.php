@@ -22,5 +22,5 @@
         function getSimpleClass () {
             return $this->simpleClass;
         }
-        
+
     }
