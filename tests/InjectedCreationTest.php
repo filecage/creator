@@ -12,7 +12,9 @@
             $simpleInstance = new SimpleClass();
 
             /** @var ExtendedClass $extendedInstance */
-            $extendedInstance = $this->creator->createInjected(ExtendedClass::class);
+            $extendedInstance = $this->creator->createInjected(ExtendedClass::class)
+                ->with($simpleInstance)
+                ->create();
 
             $this->assertSame($simpleInstance, $extendedInstance->getSimpleClass());
         }
@@ -22,7 +24,8 @@
             $this->creator->registerClassResource($simpleInstance);
 
             /** @var ExtendedClass $extendedInstance */
-            $extendedInstance = $this->creator->createInjected(ExtendedClass::class);
+            $extendedInstance = $this->creator->createInjected(ExtendedClass::class)
+                ->create();
 
             $this->assertSame($simpleInstance, $extendedInstance->getSimpleClass());
         }
@@ -31,7 +34,9 @@
             $simpleInstance = new SimpleClass();
 
             /** @var MoreExtendedClass $moreExtendedInstance */
-            $moreExtendedInstance = $this->creator->createInjected(MoreExtendedClass::class);
+            $moreExtendedInstance = $this->creator->createInjected(MoreExtendedClass::class)
+                ->with($simpleInstance)
+                ->create();
 
             $this->assertSame($simpleInstance, $moreExtendedInstance->getSimpleClass());
             $this->assertSame($simpleInstance, $moreExtendedInstance->getExtendedClass()->getSimpleClass());
