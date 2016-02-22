@@ -35,6 +35,15 @@
          */
         function create () {
             $creatable = $this->creatable;
+
+            try {
+                if ($this->injectionRegistry->containsAnyOf($creatable->getDependencies())) {
+                    return $this->createInstance($creatable);
+                }
+            } catch (ReflectionException $e) {
+                // silent catch: let it run through actual creation if there's an unknown dependency
+            }
+
             $instance = $this->resourceRegistry->getClassResource($this->className);
             if (!$instance) {
                 $instance = $this->createInstance($creatable);

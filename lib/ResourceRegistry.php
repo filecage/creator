@@ -75,4 +75,20 @@
             return $this->primitiveResources[$resourceKey];
         }
 
+        /**
+         * @param DependencyContainer $dependencyContainer
+         *
+         * @return bool
+         */
+        function containsAnyOf (DependencyContainer $dependencyContainer) {
+            foreach ($dependencyContainer->getDependencies() as $dependency) {
+                $class = $dependency->getClass();
+                if ($class && $this->getClassResource($class->getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
     }
