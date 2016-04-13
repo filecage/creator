@@ -1,7 +1,7 @@
 {
     "name": "tholabs/creator",
     "description": "creator is a simple PHP dependency injection that works with typehints",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "authors": [
         {
             "name": "David Beuchert",
