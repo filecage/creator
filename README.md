@@ -5,6 +5,7 @@ creator is a simple PHP dependency injection that works with typehints and Refle
 * [Testing](#testing)
 * [Basic Usage](#basic-usage)
 * [Injected Instances](#injected-instances)
+* [Invoke Closures / Callables](#invoke-closures--callables)
 * [Uninstantiable Classes](#uninstantiable-classes)
 * [Registering Resources](#registering-resources)
 * [Exceptions](#exceptions)
@@ -59,6 +60,31 @@ Creator is able to use a second and independent resource registry for each creat
 ````
 Any other depdendency of MyClass is being resolved the usual way, i.e. looked up via the ResourceRegistry and, if there is no instance yet, it's being created with the same injected resources.
 Creator is able to collect dependency signatures and thereby only re-creates instances that really require an injected dependency.
+
+## Invoke Closures / Callables
+Creator is able to resolve parameters of closures and callables (invokables) the usual way. It supports closures and method-context array callables with the object at index 0 (using the class name at index 0 is currently not supported and will cause Creator to throw an `Unresolvable` exception).
+
+Of course, injecting instances is supported as well.
+````php
+<?php
+
+    // Default invocation
+    $creator->invoke(function(SimpleClass $simpleClass) {
+        if ($simpleClass instanceof SimpleClass) {
+            echo 'Everything works as expected.';
+        }
+    }
+    
+    // Injected invocation
+    $simpleClassRoleModel = new SimpleClass();
+    $creator->invokeInjected(function(SimpleClass $simpleClass) use($simpleClassRoleModel) {
+        if ($simpleClass === $simpleClassRoleModel) {
+            echo 'Injection is great';
+        } else {
+            echo 'Injection is great, but does not work';
+        }
+    })->with($simpleClassRoleModel)->invoke();
+````
 
 ## Uninstantiable Classes
 ### Singletons
