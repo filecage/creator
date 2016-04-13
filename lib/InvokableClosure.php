@@ -14,6 +14,7 @@
          */
         static function createFromCallable (callable $callable) {
             if (is_array($callable) && count($callable) === 2) {
+                // todo: Creator should resolve the object if we know the class name
                 if (!is_object($callable[0])) {
                     throw new Unresolvable('Unable to handle invokation of object-context callable: no object given on callable index 0');
                 }
