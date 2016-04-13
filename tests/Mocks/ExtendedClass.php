@@ -23,4 +23,13 @@
             return $this->simpleClass;
         }
 
+        /**
+         * @param AnotherSimpleClass $anotherSimpleClass
+         *
+         * @return MoreExtendedClass
+         */
+        function getMoreExtendedClass (AnotherSimpleClass $anotherSimpleClass) {
+            return new MoreExtendedClass($this, $this->getSimpleClass(), $anotherSimpleClass);
+        }
+
     }

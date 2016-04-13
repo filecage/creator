@@ -2,6 +2,9 @@
 
     namespace Creator\Tests;
 
+    use Creator\Tests\Mocks\AnotherSimpleClass;
+    use Creator\Tests\Mocks\ExtendedClass;
+    use Creator\Tests\Mocks\MoreExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
 
     class InvocationTest extends AbstractCreatorTest {
@@ -22,6 +25,19 @@
             })
                 ->with($injectionClass)
                 ->invoke();
+        }
+
+        function testExpectsInvocationInObjectContext () {
+            $simpleClass = new SimpleClass();
+            $extendedClass = new ExtendedClass($simpleClass);
+
+            /** @var MoreExtendedClass $moreExtendedClass */
+            $moreExtendedClass = $this->creator->invoke([$extendedClass, 'getMoreExtendedClass']);
+
+            $this->assertInstanceOf(MoreExtendedClass::class, $moreExtendedClass);
+            $this->assertInstanceOf(AnotherSimpleClass::class, $moreExtendedClass->getAnotherSimpleClass());
+            $this->assertSame($simpleClass, $moreExtendedClass->getSimpleClass());
+            $this->assertSame($extendedClass, $moreExtendedClass->getExtendedClass());
         }
 
     }
