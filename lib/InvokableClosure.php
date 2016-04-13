@@ -10,6 +10,10 @@
          * @return static
          */
         static function createFromCallable (callable $callable) {
+            if (is_array($callable) && count($callable) === 2) {
+                return new InvokableMethod(new \ReflectionMethod($callable[0], $callable[1]), $callable[0]);
+            }
+
             return new static(new \ReflectionFunction($callable));
         }
 
