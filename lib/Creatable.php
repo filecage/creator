@@ -2,7 +2,7 @@
 
     namespace Creator;
 
-    class Creatable extends Invokable {
+    class Creatable extends InvokableMethod {
 
         /**
          * @var string

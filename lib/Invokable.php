@@ -2,7 +2,7 @@
 
     namespace Creator;
 
-    class Invokable {
+    abstract class Invokable {
 
         /**
          * @var DependencyContainer
@@ -10,45 +10,29 @@
         private $dependencies;
 
         /**
-         * @var \ReflectionMethod
+         * @var \ReflectionFunction|\ReflectionMethod
          */
-        private $reflectionMethod;
-        /**
-         * @var null
-         */
-        private $object;
-
-        /**
-         * @param \ReflectionMethod $reflectionMethod
-         * @param null $object
-         */
-        function __construct(\ReflectionMethod $reflectionMethod = null, $object = null) {
-            $this->reflectionMethod = $reflectionMethod;
-            $this->object = $object;
-        }
+        protected $invokableReflection;
 
         /**
          * @param array $args
          *
          * @return mixed
          */
-        function invoke (array $args = []) {
-            if (!$this->reflectionMethod) {
-                return null;
-            }
+        abstract function invoke (array $args = []);
 
-            if (!$args) {
-                return $this->reflectionMethod->invoke($this->object);
-            } else {
-                return $this->reflectionMethod->invokeArgs($this->object, $args);
-            }
+        /**
+         * @param \ReflectionFunctionAbstract $invokableReflection
+         */
+        function __construct (\ReflectionFunctionAbstract $invokableReflection = null) {
+            $this->invokableReflection = $invokableReflection;
         }
 
         /**
          * @return \ReflectionMethod
          */
-        function getReflectionMethod () {
-            return $this->reflectionMethod;
+        function getInvokableReflection () {
+            return $this->invokableReflection;
         }
 
         /**
@@ -67,11 +51,11 @@
          */
         private function collectDependencies () {
             $dependencies = new DependencyContainer();
-            if (!$this->reflectionMethod) {
+            if (!$this->invokableReflection) {
                 return $dependencies;
             }
 
-            foreach ($this->reflectionMethod->getParameters() as $parameter) {
+            foreach ($this->invokableReflection->getParameters() as $parameter) {
                 $dependencies->addDependency($parameter);
             }
 
