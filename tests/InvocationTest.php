@@ -20,7 +20,7 @@
             $that = $this;
             $injectionClass = new SimpleClass();
 
-            $this->creator->invokeWith(function(SimpleClass $simpleClass) use ($that, $injectionClass){
+            $this->creator->invokeInjected(function(SimpleClass $simpleClass) use ($that, $injectionClass){
                 $that->assertSame($injectionClass, $simpleClass);
             })
                 ->with($injectionClass)

@@ -55,7 +55,7 @@
          *
          * @return Invocation
          */
-        function invokeWith (callable $callable) {
+        function invokeInjected (callable $callable) {
             return new Invocation(InvokableClosure::createFromCallable($callable), $this->resourceRegistry);
         }
 
