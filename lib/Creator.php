@@ -42,6 +42,24 @@
         }
 
         /**
+         * @param callable $closure
+         *
+         * @return mixed
+         */
+        function invoke (callable $closure) {
+            return (new Invocation(InvokableClosure::createFromCallable($closure), $this->resourceRegistry))->invoke();
+        }
+
+        /**
+         * @param callable $closure
+         *
+         * @return Invocation
+         */
+        function invokeWith (callable $closure) {
+            return new Invocation(InvokableClosure::createFromCallable($closure), $this->resourceRegistry);
+        }
+
+        /**
          * @param object $instance
          * @param string $classResourceKey
          *
