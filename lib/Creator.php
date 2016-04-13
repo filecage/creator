@@ -42,21 +42,21 @@
         }
 
         /**
-         * @param callable $closure
+         * @param callable $callable
          *
          * @return mixed
          */
-        function invoke (callable $closure) {
-            return (new Invocation(InvokableClosure::createFromCallable($closure), $this->resourceRegistry))->invoke();
+        function invoke (callable $callable) {
+            return (new Invocation(InvokableClosure::createFromCallable($callable), $this->resourceRegistry))->invoke();
         }
 
         /**
-         * @param callable $closure
+         * @param callable $callable
          *
          * @return Invocation
          */
-        function invokeWith (callable $closure) {
-            return new Invocation(InvokableClosure::createFromCallable($closure), $this->resourceRegistry);
+        function invokeWith (callable $callable) {
+            return new Invocation(InvokableClosure::createFromCallable($callable), $this->resourceRegistry);
         }
 
         /**
