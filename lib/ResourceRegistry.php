@@ -77,7 +77,7 @@
          * @throws Unresolvable
          */
         function getPrimitiveResource ($resourceKey) {
-            if (!isset($this->primitiveResources[$resourceKey])) {
+            if (!array_key_exists($resourceKey, $this->primitiveResources)) {
                 throw new Unresolvable('Tried to load dependency "' . $resourceKey . '" with unknown primitive resource');
             }
 
