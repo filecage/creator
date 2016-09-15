@@ -109,7 +109,9 @@ If you want creator to use a certain instance of a class, you can register any o
 ````
 Theres also a second parameter `$classResourceKey` which bypasses a get_class determination of the object. This might break code completion and type hinting, so use it wisely.
 ### Primitive (scalar) Resources
-While it is not recommended to use them, Creator supports registering scalar values by variable name. Beware that this might cause some unexpected behaviour when working with vendor packages.
+Creator supports registering scalar values by variable name. Beware that this might cause some unexpected behaviour when defining global scalar resources, especially when working with vendor packages.
+
+#### Global registration (not recommended)
 ````php
 <?php
 
@@ -124,8 +126,26 @@ While it is not recommended to use them, Creator supports registering scalar val
     
     $creator->create(A::class); // bar
 ````
-If a constructor argument has a default value and Creator can not find a matching scalar value, it will use the default value.
 
+#### Injected registration
+````php
+<?php
+
+    class A {
+        function __construct($foo) {
+            echo $foo;
+        }
+    }
+    
+    $creator = new Creator\Creator;
+    $creator->createInjected(A::class)
+        ->with('bar', 'foo') // first value is the injection, second the resource key
+        ->create();
+````
+
+#### Primitive resource specifics
+- If an argument has a default value and Creator can not find a matching scalar value, it will use the default value.
+- Registering an object with `Creation::with()` will always result in a class resource registration, i.e. registering `$creation->with($myInstance, 'foo');` will only register `$myInstance` as class foo, but never as primitive resource. 
 
 ## Exceptions
 If Creator is unable to resolve a dependency, it will throw a `Creator\Exceptions\Unresolvable`.
