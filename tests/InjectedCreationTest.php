@@ -6,6 +6,7 @@
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\MoreExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
+    use Creator\Tests\Mocks\SimpleClassWithPrimitiveDependencies;
 
     class InjectedCreationTest extends AbstractCreatorTest {
 
@@ -84,6 +85,28 @@
             $this->assertNotSame($simpleInstance, $secondExtendedInstance->getSimpleClass());
             $this->assertNotSame($extendedInstance, $thirdExtendedInstance);
             $this->assertNotSame($secondExtendedInstance, $thirdExtendedInstance);
+        }
+
+        function testExpectsPrimitiveResourceFromInjectedRegistry () {
+            /** @var SimpleClassWithPrimitiveDependencies $simpleInstance */
+            $simpleInstance = $this->creator->createInjected(SimpleClassWithPrimitiveDependencies::class)
+                ->with(SimpleClassWithPrimitiveDependencies::FROM_REGISTRY, 'fromRegistry')
+                ->create();
+
+            $this->assertInstanceOf(SimpleClassWithPrimitiveDependencies::class, $simpleInstance);
+            $this->assertSame(SimpleClassWithPrimitiveDependencies::FROM_REGISTRY, $simpleInstance->getFromRegistry());
+        }
+
+        function testExpectsPrimitiveResourceFromInjectedRegistryOverGlobalRegistry () {
+            $this->creator->registerPrimitiveResource('fromRegistry', 'global');
+
+            /** @var SimpleClassWithPrimitiveDependencies $simpleInstance */
+            $simpleInstance = $this->creator->createInjected(SimpleClassWithPrimitiveDependencies::class)
+                ->with('injected', 'fromRegistry')
+                ->create();
+
+            $this->assertInstanceOf(SimpleClassWithPrimitiveDependencies::class, $simpleInstance);
+            $this->assertSame('injected', $simpleInstance->getFromRegistry());
         }
 
     }
