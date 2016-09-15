@@ -42,13 +42,17 @@
         }
 
         /**
-         * @param object $instance
-         * @param null $classResourceKey
+         * @param mixed $injected
+         * @param string $resourceKey
          *
          * @return $this
          */
-        function with ($instance, $classResourceKey = null) {
-            $this->injectionRegistry->registerClassResource($instance, $classResourceKey);
+        function with ($injected, $resourceKey = null) {
+            if (is_object($injected)) {
+                $this->injectionRegistry->registerClassResource($injected, $resourceKey);
+            } elseif ($resourceKey !== null) {
+                $this->injectionRegistry->registerPrimitiveResource($resourceKey, $injected);
+            }
 
             return $this;
         }
@@ -113,7 +117,11 @@
          * @throws Unresolvable
          */
         private function getPrimitiveResource ($resourceKey) {
-            return $this->resourceRegistry->getPrimitiveResource($resourceKey);
+            try {
+                return $this->injectionRegistry->getPrimitiveResource($resourceKey);
+            } catch (Unresolvable $e) {
+                return $this->resourceRegistry->getPrimitiveResource($resourceKey);
+            }
         }
 
     }
