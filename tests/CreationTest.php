@@ -80,4 +80,13 @@
             $this->assertSame($a->getAnotherSimpleClass(), $b->getAnotherSimpleClass());
         }
 
+        function testExpectsCreationWithRegisteredNullValue () {
+            $this->creator->registerPrimitiveResource(SimpleClassWithPrimitiveDependencies::FROM_REGISTRY, null);
+
+            /** @var SimpleClassWithPrimitiveDependencies $simpleInstance */
+            $simpleInstance = $this->creator->create(SimpleClassWithPrimitiveDependencies::class);
+
+            $this->assertNull($simpleInstance->getFromRegistry());
+        }
+
     }
