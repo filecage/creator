@@ -5,6 +5,7 @@
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\ExtendedInterface;
     use Creator\Tests\Mocks\SimpleAbstractClass;
+    use Creator\Tests\Mocks\SimpleClass;
     use Creator\Tests\Mocks\SimpleInterface;
     use Creator\Tests\Mocks\SimpleSingleton;
 
@@ -24,6 +25,18 @@
 
         function testExpectsInstanceFromFactoryWithDependencies () {
             $this->assertInstanceOf(ExtendedClass::class, $this->creator->create(ExtendedInterface::class));
+        }
+
+        function testExpectsFactoryInstanceCreatedWithInjectedInstance () {
+            $simpleInstance = new SimpleClass();
+            /** @var ExtendedInterface $extendedInstance */
+            $extendedInstance = $this->creator->createInjected(ExtendedInterface::class)
+                ->with($simpleInstance)
+                ->create();
+
+            $this->assertInstanceOf(ExtendedInterface::class, $extendedInstance);
+            $this->assertInstanceOf(ExtendedClass::class, $extendedInstance);
+            $this->assertSame($simpleInstance, $extendedInstance->getSimpleClass());
         }
 
     }
