@@ -4,4 +4,9 @@
 
     interface ExtendedInterface {
 
+        /**
+         * @return SimpleClass
+         */
+        function getSimpleClass();
+
     }
