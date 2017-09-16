@@ -14,7 +14,7 @@
         "issues": "https://github.com/filecage/creator/issues"
     },
     "require": {
-        "php": ">=5.1.3"
+        "php": ">=7.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.3"
