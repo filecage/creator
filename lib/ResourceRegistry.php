@@ -52,6 +52,33 @@
         }
 
         /**
+         * @param Creatable $creatable
+         * @return object
+         */
+        function findSatisfyingInstance (Creatable $creatable) {
+            $satisfiableTarget = $creatable->getReflectionClass();
+            if ($satisfiableTarget->isInterface()) {
+                $verificationCallback = function(ClassResource $resource) use ($satisfiableTarget) {
+                    return $resource->getReflection()->implementsInterface($satisfiableTarget->getName());
+                };
+            } elseif ($satisfiableTarget->isAbstract()) {
+                $verificationCallback = function(ClassResource $resource) use ($satisfiableTarget) {
+                    return $satisfiableTarget->isInstance($resource->getInstance());
+                };
+            } else {
+                return null;
+            }
+
+            foreach ($this->classResources as $resource) {
+                if ($verificationCallback($resource) === true) {
+                    return $resource->getInstance();
+                }
+            }
+
+            return null;
+        }
+
+        /**
          * @return int
          */
         function getRegisteredClassResourcesCount () {
