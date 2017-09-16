@@ -7,7 +7,7 @@
     class ResourceRegistry {
 
         /**
-         * @var array
+         * @var ClassResource[]
          */
         private $classResources = [];
 
@@ -29,7 +29,7 @@
          */
         function registerClassResource ($instance, $classResourceKey = null) {
             $classResourceKey = $classResourceKey ?: get_class($instance);
-            $this->classResources[$classResourceKey] = $instance;
+            $this->classResources[$classResourceKey] = ClassResource::createFromInstance($instance);
 
             if ($this->onRegistration) {
                 call_user_func($this->onRegistration, $instance, $classResourceKey);
@@ -48,7 +48,7 @@
                 return null;
             }
 
-            return $this->classResources[$classResourceKey];
+            return $this->classResources[$classResourceKey]->getInstance();
         }
 
         /**
