@@ -33,9 +33,7 @@
         }
 
         function walkMiddlewares ($buffer = null) {
-            $entryPoint = end($this->middlewareStack);
-
-            return call_user_func($entryPoint, $buffer);
+            return call_user_func(end($this->middlewareStack), $buffer);
         }
 
     }
