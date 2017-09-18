@@ -38,6 +38,7 @@
             $creatable = $this->creatable;
 
             try {
+                // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
                 if ($this->injectionRegistry->containsAnyOf($creatable->getDependencies())) {
                     return $this->createInstance($creatable);
                 }
