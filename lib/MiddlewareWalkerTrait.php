@@ -4,7 +4,7 @@
 
     use Creator\Interfaces\Middleware;
 
-    class MiddlewareWalker {
+    trait MiddlewareWalkerTrait {
 
         /**
          * @var callable[]
