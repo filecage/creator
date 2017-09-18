@@ -32,7 +32,11 @@
             return $this;
         }
 
-        function walkMiddlewares ($buffer = null) {
+        /**
+         * @param mixed $buffer
+         * @return mixed
+         */
+        protected function walkMiddlewares ($buffer = null) {
             return call_user_func(end($this->middlewareStack), $buffer);
         }
 

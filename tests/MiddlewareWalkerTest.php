@@ -14,13 +14,22 @@
          * @return MiddlewareWalkerTrait
          */
         function getMiddlewareWalker () {
-            return new class { use MiddlewareWalkerTrait; };
+            /** @var MiddlewareWalkerTrait $ghotie */
+            $ghotie = new class {
+                use MiddlewareWalkerTrait;
+
+                function run ($buffer) {
+                    return $this->walkMiddlewares($buffer);
+                }
+            };
+
+            return $ghotie; // using a ghotie to fix intelij warnings
         }
 
         function testExpectsMiddlewareInvocation () {
             $middlewareWalker = $this->getMiddlewareWalker()->addMiddleware(new Rot13Middleware());
 
-            $this->assertSame('Sbbone', $middlewareWalker->walkMiddlewares('Foobar'));
+            $this->assertSame('Sbbone', $middlewareWalker->run('Foobar'));
         }
 
         function testExpectsDeterministicMiddlewareOrder () {
@@ -28,7 +37,7 @@
                 ->addMiddleware(new Rot13Middleware())
                 ->addMiddleware(new StringReverseMiddleware());
 
-            $this->assertSame('enobbS', $middlewareWalker->walkMiddlewares('Foobar'));
+            $this->assertSame('enobbS', $middlewareWalker->run('Foobar'));
         }
 
         function testExpectsRuntimeOrderDefinedByMiddleware () {
@@ -38,7 +47,7 @@
                 ->addMiddleware(new Rot13Middleware())
                 ->addMiddleware(new StringReverseMiddleware());
 
-            $this->assertSame('Foobar', $middlewareWalker->walkMiddlewares('Foobar'));
+            $this->assertSame('Foobar', $middlewareWalker->run('Foobar'));
         }
 
     }
