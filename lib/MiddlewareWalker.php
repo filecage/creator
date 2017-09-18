@@ -26,10 +26,7 @@
         function addMiddleware (Middleware $middleware) {
             $next = end($this->middlewareStack) ?: $this;
             $this->middlewareStack[] = function($result) use ($middleware, $next) {
-                $return  = call_user_func($middleware, $result, $next);
-                var_dump($return);
-
-                return $return;
+                return call_user_func($middleware, $result, $next);
             };
 
             return $this;
