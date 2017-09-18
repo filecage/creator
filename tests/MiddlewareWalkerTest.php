@@ -3,6 +3,8 @@
     namespace Creator\Tests;
 
     use Creator\MiddlewareWalkerTrait;
+    use Creator\Tests\Middlewares\ReverseRot13Middleware;
+    use Creator\Tests\Middlewares\ReverseStringReverseMiddleware;
     use Creator\Tests\Middlewares\Rot13Middleware;
     use Creator\Tests\Middlewares\StringReverseMiddleware;
 
@@ -27,6 +29,16 @@
                 ->addMiddleware(new StringReverseMiddleware());
 
             $this->assertSame('enobbS', $middlewareWalker->walkMiddlewares('Foobar'));
+        }
+
+        function testExpectsRuntimeOrderDefinedByMiddleware () {
+            $middlewareWalker = $this->getMiddlewareWalker()
+                ->addMiddleware(new ReverseRot13Middleware())
+                ->addMiddleware(new ReverseStringReverseMiddleware())
+                ->addMiddleware(new Rot13Middleware())
+                ->addMiddleware(new StringReverseMiddleware());
+
+            $this->assertSame('Foobar', $middlewareWalker->walkMiddlewares('Foobar'));
         }
 
     }
