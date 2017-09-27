@@ -32,16 +32,18 @@
 
         /**
          * @return object
+         * @throws Unresolvable
          */
         function create () {
             $creatable = $this->creatable;
 
             try {
+                // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
                 if ($this->injectionRegistry->containsAnyOf($creatable->getDependencies())) {
                     return $this->createInstance($creatable);
                 }
             } catch (ReflectionException $e) {
-                // silent catch: let it run through actual creation if there's an unknown dependency
+                throw new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()->getName());
             }
 
             $instance = $this->resourceRegistry->getClassResource($this->className);
