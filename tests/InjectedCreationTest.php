@@ -2,6 +2,7 @@
 
     namespace Creator\Tests;
 
+    use Creator\ResourceRegistry;
     use Creator\Tests\Mocks\AnotherSimpleClass;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\MoreExtendedClass;
@@ -98,10 +99,10 @@
         }
 
         function testExpectsPrimitiveResourceFromInjectedRegistryOverGlobalRegistry () {
-            $this->creator->registerPrimitiveResource('fromRegistry', 'global');
+            $creator = $this->getWithRegistry((new ResourceRegistry())->registerPrimitiveResource('fromRegistry', 'global'));
 
             /** @var SimpleClassWithPrimitiveDependencies $simpleInstance */
-            $simpleInstance = $this->creator->createInjected(SimpleClassWithPrimitiveDependencies::class)
+            $simpleInstance = $creator->createInjected(SimpleClassWithPrimitiveDependencies::class)
                 ->with('injected', 'fromRegistry')
                 ->create();
 

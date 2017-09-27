@@ -2,6 +2,7 @@
 
     namespace Creator\Tests;
 
+    use Creator\ResourceRegistry;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\MoreExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
@@ -47,12 +48,13 @@
             $fromRegistry = SimpleClassWithPrimitiveDependencies::FROM_REGISTRY;
             $fromDefault = SimpleClassWithPrimitiveDependencies::FROM_DEFAULT;
 
-            $this->creator
+            $creator = $this->getWithRegistry((new ResourceRegistry())
                 ->registerPrimitiveResource('fromRegistry', $fromRegistry)
-                ->registerPrimitiveResource('fromRegistryWithDefault', $fromRegistry);
+                ->registerPrimitiveResource('fromRegistryWithDefault', $fromRegistry)
+            );
 
             /** @var SimpleClassWithPrimitiveDependencies $instance */
-            $instance = $this->creator->create(SimpleClassWithPrimitiveDependencies::class);
+            $instance = $creator->create(SimpleClassWithPrimitiveDependencies::class);
 
             $this->assertSame($fromRegistry, $instance->getFromRegistry());
             $this->assertSame($fromRegistry, $instance->getFromRegistryWithDefault());
@@ -81,10 +83,10 @@
         }
 
         function testExpectsCreationWithRegisteredNullValue () {
-            $this->creator->registerPrimitiveResource(SimpleClassWithPrimitiveDependencies::FROM_REGISTRY, null);
+            $creator = $this->getWithRegistry((new ResourceRegistry())->registerPrimitiveResource(SimpleClassWithPrimitiveDependencies::FROM_REGISTRY, null));
 
             /** @var SimpleClassWithPrimitiveDependencies $simpleInstance */
-            $simpleInstance = $this->creator->create(SimpleClassWithPrimitiveDependencies::class);
+            $simpleInstance = $creator->create(SimpleClassWithPrimitiveDependencies::class);
 
             $this->assertNull($simpleInstance->getFromRegistry());
         }
