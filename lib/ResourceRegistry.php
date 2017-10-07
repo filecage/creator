@@ -55,17 +55,18 @@
          * @param Creatable $creatable
          * @return object
          */
-        function findSatisfyingInstance (Creatable $creatable) {
-            $satisfiableTarget = $creatable->getReflectionClass();
-            if ($satisfiableTarget->isInterface()) {
-                $verificationCallback = function(ClassResource $resource) use ($satisfiableTarget) {
-                    return $resource->getReflection()->implementsInterface($satisfiableTarget->getName());
+        function findFulfillingInstance (Creatable $creatable) {
+            $fulfillable = $creatable->getReflectionClass();
+            if ($fulfillable->isInterface()) {
+                $verificationCallback = function(ClassResource $resource) use ($fulfillable) {
+                    return $resource->getReflection()->implementsInterface($fulfillable->getName());
                 };
-            } elseif ($satisfiableTarget->isAbstract()) {
-                $verificationCallback = function(ClassResource $resource) use ($satisfiableTarget) {
-                    return $satisfiableTarget->isInstance($resource->getInstance());
+            } elseif ($fulfillable->isAbstract()) {
+                $verificationCallback = function(ClassResource $resource) use ($fulfillable) {
+                    return $fulfillable->isInstance($resource->getInstance());
                 };
             } else {
+                // unsupported uninstantiable
                 return null;
             }
 
@@ -75,6 +76,7 @@
                 }
             }
 
+            // not fulfillable
             return null;
         }
 
