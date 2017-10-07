@@ -7,7 +7,7 @@
     class ResourceRegistry {
 
         /**
-         * @var array
+         * @var ClassResource[]
          */
         private $classResources = [];
 
@@ -29,7 +29,7 @@
          */
         function registerClassResource ($instance, $classResourceKey = null) {
             $classResourceKey = $classResourceKey ?: get_class($instance);
-            $this->classResources[$classResourceKey] = $instance;
+            $this->classResources[$classResourceKey] = ClassResource::createFromInstance($instance);
 
             if ($this->onRegistration) {
                 call_user_func($this->onRegistration, $instance, $classResourceKey);
@@ -48,7 +48,36 @@
                 return null;
             }
 
-            return $this->classResources[$classResourceKey];
+            return $this->classResources[$classResourceKey]->getInstance();
+        }
+
+        /**
+         * @param Creatable $creatable
+         * @return object
+         */
+        function findFulfillingInstance (Creatable $creatable) {
+            $fulfillable = $creatable->getReflectionClass();
+            if ($fulfillable->isInterface()) {
+                $verificationCallback = function(ClassResource $resource) use ($fulfillable) {
+                    return $resource->getReflection()->implementsInterface($fulfillable->getName());
+                };
+            } elseif ($fulfillable->isAbstract()) {
+                $verificationCallback = function(ClassResource $resource) use ($fulfillable) {
+                    return $fulfillable->isInstance($resource->getInstance());
+                };
+            } else {
+                // unsupported uninstantiable
+                return null;
+            }
+
+            foreach ($this->classResources as $resource) {
+                if ($verificationCallback($resource) === true) {
+                    return $resource->getInstance();
+                }
+            }
+
+            // not fulfillable
+            return null;
         }
 
         /**

@@ -8,6 +8,8 @@
     use Creator\Tests\Mocks\SimpleClass;
     use Creator\Tests\Mocks\SimpleInterface;
     use Creator\Tests\Mocks\SimpleSingleton;
+    use Creator\Tests\Mocks\UninstantiableInterface;
+    use Creator\Tests\Mocks\UninstantiableSupplier;
 
     class UninstantiableCreationTest extends AbstractCreatorTest {
 
@@ -37,6 +39,14 @@
             $this->assertInstanceOf(ExtendedInterface::class, $extendedInstance);
             $this->assertInstanceOf(ExtendedClass::class, $extendedInstance);
             $this->assertSame($simpleInstance, $extendedInstance->getSimpleClass());
+        }
+
+        function testExpectsSupplierInstanceWhenDependingUninstantiable () {
+            $supplierInstance = new UninstantiableSupplier();
+            $this->creator->registerClassResource($supplierInstance);
+
+            $this->assertSame($supplierInstance, $this->creator->create(UninstantiableInterface::class));
+            $this->assertSame($supplierInstance, $this->creator->create(UninstantiableSupplier::class));
         }
 
     }

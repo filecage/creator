@@ -85,8 +85,14 @@ Injecting instances is supported as well.
 ### Singletons
 Singletons can be resolved if they implement the `Creator\Interfaces\Singleton` interface.
 ### Abstracts, Interfaces
-If Creator stumbles upon an interface or an abstract class, it will try to find a factory by using the entities name with Factory, i.e. for `Foo\Bar\MyInterface` Creator will try to find a `Foo\Bar\MyInterfaceFactory`, which has to implement the `Creator\Interfaces\Factory`. Factories are being created via `Creator::create` and can therefore contain further dependencies.
+If Creator stumbles upon an interface or an abstract class, it will try to:
 
+1. Look up the resource registry if any resource implements the interface / abstract class. First one is being served.
+2. Look up a factory by using the entities name + "Factory", i.e. the factory of `Foo\Bar\MyInterface` is `Foo\Bar\MyInterfaceFactory`
+
+#### Additional notes on Factories
+* A factory has to implement the `Creator\Interfaces\Factory` interface
+* Factories are being created via `Creator::create` and thus may require further dependencies
 
 ## Registering Resources
 ### Classes
@@ -104,25 +110,8 @@ If you want creator to use a certain instance of a class, you can register any o
 ````
 The optional second parameter `$classResourceKey` of the method `registerClassResource` bypasses a get_class determination of the object. This might break code completion and type hinting, so use it wisely.
 ### Primitive (scalar) Resources
-Creator supports registering scalar values by variable name. Beware that this might cause some unexpected behaviour when defining global scalar resources, especially when working with vendor packages.
+Creator supports registering scalar values by variable name.
 
-#### Global registration (not recommended)
-````php
-<?php
-
-    class A {
-        function __construct($foo) {
-            echo $foo;
-        }
-    }
-    
-    $creator = new Creator\Creator;
-    $creator->registerPrimitiveResource('foo', 'bar');
-    
-    $creator->create(A::class); // bar
-````
-
-#### Injected registration
 ````php
 <?php
 
@@ -138,6 +127,10 @@ Creator supports registering scalar values by variable name. Beware that this mi
         ->create();
 ````
 
+In previous versions of Creator, there was a method to register primitive resources in the global registry.
+This has been removed as it might cause unexpected behaviour and hinder future development.
+
+However, if you *really* need it (but don't say nobody told you it's a bad idea), you can still achieve this by registering the scalar value to a `ResourceRegistry` and pass this registry while constructing your `Creator\Creator` instance. See the tests for example code.
 #### Primitive resource specifics
 - If an argument has a default value and Creator can not find a matching scalar value, it will use the default value.
 - Registering an object with `Creation::with()` will always result in a class resource registration, i.e. registering `$creation->with($myInstance, 'foo');` will only register `$myInstance` as class foo, but never as primitive resource.
