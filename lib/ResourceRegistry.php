@@ -17,11 +17,6 @@
         private $primitiveResources = [];
 
         /**
-         * @var callable
-         */
-        private $onRegistration;
-
-        /**
          * @param object $instance
          * @param string $classResourceKey
          *
@@ -30,10 +25,6 @@
         function registerClassResource ($instance, $classResourceKey = null) {
             $classResourceKey = $classResourceKey ?: get_class($instance);
             $this->classResources[$classResourceKey] = ClassResource::createFromInstance($instance);
-
-            if ($this->onRegistration) {
-                call_user_func($this->onRegistration, $instance, $classResourceKey);
-            }
 
             return $this;
         }
@@ -137,24 +128,8 @@
         function cloneWithout ($exceptedClass) {
             $clone = clone $this;
             unset($clone->classResources[$exceptedClass]);
-            $clone->onRegistration(function($instance, $class) use ($exceptedClass){
-                if ($class !== $exceptedClass) {
-                    $this->registerClassResource($instance, $class);
-                }
-            });
 
             return $clone;
-        }
-
-        /**
-         * @param callable $callback
-         *
-         * @return $this
-         */
-        private function onRegistration (callable $callback) {
-            $this->onRegistration = $callback;
-
-            return $this;
         }
 
     }
