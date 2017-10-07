@@ -76,7 +76,7 @@
             if ($reflector->implementsInterface(Interfaces\Singleton::class)) {
                 return $this->getInstanceFromSingleton($reflector);
             } elseif ($reflector->isInterface() || $reflector->isAbstract()) {
-                return $this->createInstanceFromFactoryCreatable($creatable, $this->getFactoryClassCreatable($reflector));
+                return $this->findsFulfillngInstanceForUninstantiableCreatable($creatable) ?? $this->createInstanceFromFactoryCreatable($creatable, $this->getFactoryClassCreatable($reflector));
             } else {
                 throw new Unresolvable('Class is neither instantiable nor implements Singleton interface', $reflector->getName());
             }
@@ -127,6 +127,14 @@
          */
         private function getInstanceFromSingleton (ReflectionClass $reflector) {
             return $reflector->getMethod('getInstance')->invoke(null);
+        }
+
+        /**
+         * @param Creatable $creatable
+         * @return object|null
+         */
+        private function findsFulfillngInstanceForUninstantiableCreatable (Creatable $creatable) {
+            return $this->injectionRegistry->findFulfillingInstance($creatable) ?? $this->resourceRegistry->findFulfillingInstance($creatable);
         }
 
         /**

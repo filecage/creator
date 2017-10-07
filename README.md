@@ -85,8 +85,14 @@ Injecting instances is supported as well.
 ### Singletons
 Singletons can be resolved if they implement the `Creator\Interfaces\Singleton` interface.
 ### Abstracts, Interfaces
-If Creator stumbles upon an interface or an abstract class, it will try to find a factory by using the entities name with Factory, i.e. for `Foo\Bar\MyInterface` Creator will try to find a `Foo\Bar\MyInterfaceFactory`, which has to implement the `Creator\Interfaces\Factory`. Factories are being created via `Creator::create` and can therefore contain further dependencies.
+If Creator stumbles upon an interface or an abstract class, it will try to:
 
+1. Look up the resource registry if any resource implements the interface / abstract class. First one is being served.
+2. Look up a factory by using the entities name + "Factory", i.e. the factory of `Foo\Bar\MyInterface` is `Foo\Bar\MyInterfaceFactory`
+
+#### Additional notes on Factories
+* A factory has to implement the `Creator\Interfaces\Factory` interface
+* Factories are being created via `Creator::create` and thus may require further dependencies
 
 ## Registering Resources
 ### Classes
