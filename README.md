@@ -136,4 +136,7 @@ However, if you *really* need it (but don't say nobody told you it's a bad idea)
 - Registering an object with `Creation::with()` will always result in a class resource registration, i.e. registering `$creation->with($myInstance, 'foo');` will only register `$myInstance` as class foo, but never as primitive resource.
 
 ## Exceptions
-If Creator is unable to resolve a dependency, it will throw a `Creator\Exceptions\Unresolvable`.
+All exceptions derive from `Creator\Exceptions\CreatorException`. Use this class in your catch block to catch *all* Creator-related exceptions.
+
+Additionally, there are more specific exceptions:
+* If Creator is unable to resolve a dependency, it will throw a `Creator\Exceptions\Unresolvable`.

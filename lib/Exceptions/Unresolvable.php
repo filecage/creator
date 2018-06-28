@@ -2,7 +2,7 @@
 
     namespace Creator\Exceptions;
 
-    class Unresolvable extends \Exception {
+    class Unresolvable extends CreatorException {
 
         /**
          * @var string
