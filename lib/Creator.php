@@ -84,6 +84,17 @@
         }
 
         /**
+         * @param string $classResourceKey
+         * @param string|Factory|callable $factory Factory class name, Factory instance or Factory closure
+         *
+         * @return $this
+         * @throws \Exception
+         */
+        function registerFactory(string $classResourceKey, $factory) {
+            return $this;
+        }
+
+        /**
          * @return int
          */
         function getCacheCount () {
