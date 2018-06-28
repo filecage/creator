@@ -2,6 +2,7 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\InvalidFactoryException;
     use Creator\Exceptions\Unresolvable;
     use Creator\Interfaces\Factory;
 
@@ -97,7 +98,7 @@
             } elseif ($factory instanceof Factory) {
                 $invokable = InvokableClosure::createFromCallable([$factory, 'createInstance']);
             } else {
-                throw new \Exception('Unsupported factory');
+                throw InvalidFactoryException::createWithUnknownActualType($factory, $classResourceKey);
             }
 
             $this->resourceRegistry->registerFactoryForClassResource($classResourceKey, $invokable);

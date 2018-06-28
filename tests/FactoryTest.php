@@ -41,8 +41,14 @@
             $this->assertInstanceOf(ExtendedClass::class, $uninjectedExtendedClass);
             $this->assertSame($injectedSimpleClass, $injectedExtendedClass->getSimpleClass());
             $this->assertSame($uninjectedSimpleClass, $uninjectedExtendedClass->getSimpleClass());
+        }
 
 
+        function testExpectsInvalidactoryException () {
+            $this->expectException(InvalidFactoryException::class);
+            $this->expectExceptionMessageRegExp('/Trying to register unsupported factory type ".+" for class ".+"/');
+
+            $this->creator->registerFactory(SimpleClass::class, null);
         }
 
     }
