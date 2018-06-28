@@ -40,6 +40,4 @@
             $this->assertSame($secondSimpleClass, $extendedClass->getSimpleClass());
         }
 
-        function testExpects
-
     }
