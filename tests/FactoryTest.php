@@ -26,18 +26,23 @@
         function testExpectsInjectedInstanceOverFactoryCreation () {
             $creator = new Creator();
 
-            $firstSimpleClass = new SimpleClass();
-            $creator->registerFactory(ExtendedClass::class, function() use ($firstSimpleClass) {
-                return new ExtendedClass($firstSimpleClass);
+            $uninjectedSimpleClass = new SimpleClass();
+            $creator->registerFactory(ExtendedClass::class, function() use ($uninjectedSimpleClass) {
+                return new ExtendedClass($uninjectedSimpleClass);
             });
 
-            $secondSimpleClass = new SimpleClass();
+            $injectedSimpleClass = new SimpleClass();
 
-            /** @var ExtendedClass $extendedClass */
-            $extendedClass = $creator->createInjected(ExtendedClass::class)->with($secondSimpleClass)->create();
+            /** @var ExtendedClass $injectedExtendedClass  */
+            $injectedExtendedClass = $creator->createInjected(ExtendedClass::class)->with($injectedSimpleClass)->create();
+            $uninjectedExtendedClass = $creator->create(ExtendedClass::class);
 
-            $this->assertInstanceOf(ExtendedClass::class, $extendedClass);
-            $this->assertSame($secondSimpleClass, $extendedClass->getSimpleClass());
+            $this->assertInstanceOf(ExtendedClass::class, $injectedExtendedClass);
+            $this->assertInstanceOf(ExtendedClass::class, $uninjectedExtendedClass);
+            $this->assertSame($injectedSimpleClass, $injectedExtendedClass->getSimpleClass());
+            $this->assertSame($uninjectedSimpleClass, $uninjectedExtendedClass->getSimpleClass());
+
+
         }
 
     }
