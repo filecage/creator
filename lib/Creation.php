@@ -48,6 +48,7 @@
 
             $instance = $this->resourceRegistry->getClassResource($this->className);
 
+            // todo: Injected Registry -> Injected Factory -> Global Registry -> Global Factory -> Uninstantiable Factory
             if (!$instance) {
                 $factory = $this->injectionRegistry->getFactoryInvokableForClassResource($this->className) ?? $this->resourceRegistry->getFactoryInvokableForClassResource($this->className);
                 if ($factory !== null) {
