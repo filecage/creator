@@ -47,6 +47,15 @@
             }
 
             $instance = $this->resourceRegistry->getClassResource($this->className);
+
+            if (!$instance) {
+                $factory = $this->injectionRegistry->getFactoryInvokableForClassResource($this->className) ?? $this->resourceRegistry->getFactoryInvokableForClassResource($this->className);
+                if ($factory !== null) {
+                    // todo: currently not caching factory creations, find a clever logic to let the Factory decide whether to cache
+                    $instance = (new Invocation($factory, $this->resourceRegistry, $this->injectionRegistry))->invoke();
+                }
+            }
+
             if (!$instance) {
                 $instance = $this->createInstance($creatable);
                 $this->resourceRegistry->registerClassResource($instance);
