@@ -93,15 +93,12 @@
          * @throws \Exception
          */
         function registerFactory(string $classResourceKey, $factory) {
-            if (is_callable($factory)) {
-                $invokable = InvokableClosure::createFromCallable($factory);
-            } elseif ($factory instanceof Factory) {
-                $invokable = InvokableClosure::createFromCallable([$factory, 'createInstance']);
-            } else {
-                throw InvalidFactoryException::createWithUnknownActualType($factory, $classResourceKey);
+            try {
+                $invokable = InvokableFactory::createFromAnyFactory($factory);
+                $this->resourceRegistry->registerFactoryForClassResource($classResourceKey, $invokable);
+            } catch (InvalidFactoryException $e) {
+                throw $e->enrichClass($classResourceKey);
             }
-
-            $this->resourceRegistry->registerFactoryForClassResource($classResourceKey, $invokable);
 
             return $this;
         }
