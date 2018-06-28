@@ -3,6 +3,7 @@
     namespace Creator;
 
     use Creator\Exceptions\Unresolvable;
+    use Creator\Interfaces\Factory;
 
     class Creator {
 
@@ -91,6 +92,16 @@
          * @throws \Exception
          */
         function registerFactory(string $classResourceKey, $factory) {
+            if (is_callable($factory)) {
+                $invokable = InvokableClosure::createFromCallable($factory);
+            } elseif ($factory instanceof Factory) {
+                $invokable = InvokableClosure::createFromCallable([$factory, 'createInstance']);
+            } else {
+                throw new \Exception('Unsupported factory');
+            }
+
+            $this->resourceRegistry->registerFactoryForClassResource($classResourceKey, $invokable);
+
             return $this;
         }
 
