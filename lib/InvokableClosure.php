@@ -9,10 +9,10 @@
         /**
          * @param callable $callable
          *
-         * @return static
+         * @return Invokable
          * @throws Unresolvable
          */
-        static function createFromCallable (callable $callable) {
+        static function createFromCallable (callable $callable) : Invokable {
             if (is_array($callable) && count($callable) === 2) {
                 // todo: Creator should resolve the object if we know the class name
                 if (!is_object($callable[0])) {
