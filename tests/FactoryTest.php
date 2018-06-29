@@ -3,7 +3,6 @@
     namespace Creator\Tests;
 
     use Creator\Creator;
-    use Creator\Exceptions\InvalidFactoryException;
     use Creator\ResourceRegistry;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\ExtendedInterfaceFactory;
