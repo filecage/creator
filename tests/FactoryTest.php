@@ -76,7 +76,11 @@
             }, MoreExtendedClass::class);
         }
 
-        function testExpectsInvalidactoryException () {
+
+        function testExpectsInvalidFactoryExceptionInGlobalRegistry () {
+            $this->expectException(InvalidFactoryException::class);
+            $this->expectExceptionMessageRegExp('/Trying to register unsupported factory type ".+" for class ".+"/');
+
             $this->creator->registerFactory(null, SimpleClass::class);
             $this->expectException(InvalidFactoryException::class);
             $this->expectExceptionMessageRegExp('/Trying to register unsupported factory type ".+" for class ".+"/');
