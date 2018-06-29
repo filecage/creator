@@ -2,11 +2,13 @@
 
     namespace Creator\Tests;
 
+    use Creator\Exceptions\InvalidFactoryException;
     use Creator\Tests\Mocks\InvalidClass;
     use Creator\Tests\Mocks\InvalidFactoryInstanceTestUninstantiableClass;
     use Creator\Tests\Mocks\InvalidFactoryTestUninstantiableClass;
     use Creator\Tests\Mocks\InvalidPrimitiveDependencyClass;
     use Creator\Tests\Mocks\InvalidRequirementClass;
+    use Creator\Tests\Mocks\SimpleClass;
 
     class ExceptionsTest extends AbstractCreatorTest {
 
@@ -49,5 +51,22 @@
         function testShouldThrowExceptionIfClassRequiresUnknownPrimitiveResource () {
             $this->creator->create(InvalidPrimitiveDependencyClass::class);
         }
+
+        /**
+         * @expectedException \Creator\Exceptions\InvalidFactoryException
+         * @expectedExceptionMessageRegExp /^Trying to register unsupported factory type ".+" for class ".+"$/
+         */
+        function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToGlobalRegistry () {
+            $this->creator->registerFactory(null, SimpleClass::class);
+        }
+
+        /**
+         * @expectedException \Creator\Exceptions\InvalidFactoryException
+         * @expectedExceptionMessageRegExp /^Trying to register unsupported factory type ".+" for class ".+"$/
+         */
+        function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToInjectedRegistry () {
+            $this->creator->createInjected(SimpleClass::class)->withFactory(null, SimpleClass::class);
+        }
+
 
     }
