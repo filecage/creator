@@ -6,6 +6,7 @@ creator is a simple PHP dependency injection that works with typehints and Refle
 * [Basic Usage](#basic-usage)
 * [Injected Instances](#injected-instances)
 * [Invoke Closures / Callables](#invoke-closures--callables)
+* [Factories](#factories)
 * [Uninstantiable Classes](#uninstantiable-classes)
 * [Registering Resources](#registering-resources)
 * [Exceptions](#exceptions)
@@ -81,6 +82,50 @@ Injecting instances is supported as well.
     })->with($simpleClassRoleModel)->invoke();
 ````
 
+## Factories
+If you have resources that can not be created without additional logic, but also should only be created once another component depends them, you can register a factory for this factory.
+A factory can be a callable or an instance of `Creator\Interfaces\Factory` and can be registered for any class resource, i.e. interfaces, abstracts or normal classes.
+
+### Global Factories
+````php
+<?php
+
+    $simpleClass = new SimpleClass();
+    $factory = function() use ($simpleClass) {
+        return new ExtendedClass($simpleClass);
+    };
+    
+    $creator->registerFactory($factory, ExtendedClass::class);
+    
+    $extendedClass = $creator->create(ExtendedClass::class);
+    if ($extendedClass->getSimpleClass() === $simpleClass) {
+        echo 'Factories are awesome!';
+    }
+````
+This comes in especially handy for stuff like database connections where you only want to create a connection if a component really depends on it.
+
+### Injected Factories
+Of course, you can also register a factory as injection:
+````php
+<?php
+    $simpleClass = new SimpleClass();
+    $factory = function() use ($simpleClass) {
+        return new ExtendedClass($simpleClass);
+    };
+    
+    $extendedClass = $creator->createInjected(ExtendedClass:class)
+        ->withFactory($factory, ExtendedClass::class)
+        ->create();
+    
+    if ($extendedClass->getSimpleClass() === $simpleClass) {
+        echo 'Factories are awesome!';
+    }
+````
+Injected factories overrule globally registered factories and even globally registered resources. However, they do not overrule injected resources. (Creation order routine is: Injected Instance -> Injected Factory -> Global Instance -> Global Factory -> Create Instance)
+
+### Factory Result Caching
+All factory results are registered to their corresponding `ResourceRegistry`, i.e. a injected factory will store it's result to the injected registry and thereby make it's created resource available during this creation process only.
+
 ## Uninstantiable Classes
 ### Singletons
 Singletons can be resolved if they implement the `Creator\Interfaces\Singleton` interface.
@@ -90,7 +135,7 @@ If Creator stumbles upon an interface or an abstract class, it will try to:
 1. Look up the resource registry if any resource implements the interface / abstract class. First one is being served.
 2. Look up a factory by using the entities name + "Factory", i.e. the factory of `Foo\Bar\MyInterface` is `Foo\Bar\MyInterfaceFactory`
 
-#### Additional notes on Factories
+#### Additional notes on Factory classes
 * A factory has to implement the `Creator\Interfaces\Factory` interface
 * Factories are being created via `Creator::create` and thus may require further dependencies
 
@@ -139,4 +184,5 @@ However, if you *really* need it (but don't say nobody told you it's a bad idea)
 All exceptions derive from `Creator\Exceptions\CreatorException`. Use this class in your catch block to catch *all* Creator-related exceptions.
 
 Additionally, there are more specific exceptions:
-* If Creator is unable to resolve a dependency, it will throw a `Creator\Exceptions\Unresolvable`.
+* If Creator is unable to resolve a dependency, it will throw `Creator\Exceptions\Unresolvable`.
+* If you are registering a factory which is not a `callable` or an instance of `Creator\Interfaces\Factory`, it will throw `Creator\Exceptions\InvalidFactory`
