@@ -2,7 +2,7 @@
 
     namespace Creator\Exceptions;
 
-    class InvalidFactoryException extends CreatorException {
+    class InvalidFactory extends CreatorException {
 
         /**
          * @var string
@@ -18,7 +18,7 @@
          * @param mixed $actualFactory
          * @param string $class
          *
-         * @return InvalidFactoryException
+         * @return InvalidFactory
          */
         static function createWithUnknownActualType ($actualFactory, $class = null) {
             if (class_exists($actualFactory, false)) {
@@ -29,7 +29,7 @@
                 $actualType = gettype($actualFactory);
             }
 
-            return new InvalidFactoryException($actualType, $class);
+            return new InvalidFactory($actualType, $class);
         }
 
         /**
@@ -46,7 +46,7 @@
         /**
          * @param $class
          *
-         * @return InvalidFactoryException
+         * @return InvalidFactory
          * @throws CreatorException
          */
         function enrichClass ($class) {

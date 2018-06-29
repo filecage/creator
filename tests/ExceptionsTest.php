@@ -52,7 +52,7 @@
         }
 
         /**
-         * @expectedException \Creator\Exceptions\InvalidFactoryException
+         * @expectedException \Creator\Exceptions\InvalidFactory
          * @expectedExceptionMessageRegExp /^Trying to register unsupported factory type ".+" for class ".+"$/
          */
         function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToGlobalRegistry () {
@@ -60,7 +60,7 @@
         }
 
         /**
-         * @expectedException \Creator\Exceptions\InvalidFactoryException
+         * @expectedException \Creator\Exceptions\InvalidFactory
          * @expectedExceptionMessageRegExp /^Trying to register unsupported factory type ".+" for class ".+"$/
          */
         function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToInjectedRegistry () {

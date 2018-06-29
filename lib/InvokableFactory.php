@@ -2,7 +2,7 @@
 
     namespace Creator;
 
-    use Creator\Exceptions\InvalidFactoryException;
+    use Creator\Exceptions\InvalidFactory;
     use Creator\Interfaces\Factory;
 
     abstract class InvokableFactory extends Invokable {
@@ -13,7 +13,7 @@
             } elseif ($factory instanceof Factory) {
                 $invokable = InvokableClosure::createFromCallable([$factory, 'createInstance']);
             } else {
-                throw InvalidFactoryException::createWithUnknownActualType($factory);
+                throw InvalidFactory::createWithUnknownActualType($factory);
             }
 
             return $invokable;
