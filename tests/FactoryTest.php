@@ -91,15 +91,43 @@
             }, MoreExtendedClass::class);
         }
 
+        function testExpectsInjectedFactoryOverGlobalFactory () {
+            $creator = new Creator();
+
+            $globalSimpleClass = new SimpleClass();
+            $extendedFactory = new ExtendedInterfaceFactory($globalSimpleClass);
+            $creator->registerFactory($extendedFactory, ExtendedClass::class);
+
+            $injectedSimpleClass = new SimpleClass();
+
+            /** @var ExtendedClass $injectedExtendedClass */
+            $injectedExtendedClass = $creator->createInjected(ExtendedClass::class)
+                ->withFactory(function() use ($injectedSimpleClass){
+                    return new ExtendedClass($injectedSimpleClass);
+                }, ExtendedClass::class)->create();
+
+            /** @var ExtendedClass $globalExtendedClass */
+            $globalExtendedClass = $creator->create(ExtendedClass::class);
+
+            $this->assertInstanceOf(ExtendedClass::class, $injectedExtendedClass);
+            $this->assertInstanceOf(ExtendedClass::class, $globalExtendedClass);
+            $this->assertSame($injectedSimpleClass, $injectedExtendedClass->getSimpleClass());
+            $this->assertSame($globalSimpleClass, $globalExtendedClass->getSimpleClass());
+        }
 
         function testExpectsInvalidFactoryExceptionInGlobalRegistry () {
             $this->expectException(InvalidFactoryException::class);
             $this->expectExceptionMessageRegExp('/Trying to register unsupported factory type ".+" for class ".+"/');
 
             $this->creator->registerFactory(null, SimpleClass::class);
+        }
+
+        function testExpectsInvalidFactoryExceptionInInjectedRegistry () {
             $this->expectException(InvalidFactoryException::class);
             $this->expectExceptionMessageRegExp('/Trying to register unsupported factory type ".+" for class ".+"/');
 
+            $this->creator->createInjected(SimpleClass::class)
+                ->withFactory(null, SimpleClass::class);
         }
 
     }

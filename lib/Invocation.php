@@ -2,7 +2,9 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\InvalidFactoryException;
     use Creator\Exceptions\Unresolvable;
+    use Creator\Interfaces\Factory;
     use ReflectionException;
     use ReflectionParameter;
 
@@ -52,6 +54,24 @@
                 $this->injectionRegistry->registerClassResource($injected, $resourceKey);
             } elseif ($resourceKey !== null) {
                 $this->injectionRegistry->registerPrimitiveResource($resourceKey, $injected);
+            }
+
+            return $this;
+        }
+
+        /**
+         * @param Factory|callable $factory
+         * @param string $resourceKey
+         *
+         * @return $this
+         * @throws InvalidFactoryException
+         */
+        function withFactory ($factory, string $resourceKey) {
+            try {
+                $invokable = InvokableFactory::createFromAnyFactory($factory);
+                $this->injectionRegistry->registerFactoryForClassResource($resourceKey, $invokable);
+            } catch (InvalidFactoryException $e) {
+                throw $e->enrichClass($resourceKey);
             }
 
             return $this;
