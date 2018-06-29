@@ -15,9 +15,9 @@
             $creator = new Creator();
 
             $simpleClass = new SimpleClass();
-            $creator->registerFactory(ExtendedClass::class, function() use ($simpleClass) {
+            $creator->registerFactory( function() use ($simpleClass) {
                 return new ExtendedClass($simpleClass);
-            });
+            }, ExtendedClass::class);
 
             /** @var ExtendedClass $extendedClass */
             $extendedClass = $creator->create(ExtendedClass::class);
@@ -30,9 +30,9 @@
             $creator = new Creator();
 
             $uninjectedSimpleClass = new SimpleClass();
-            $creator->registerFactory(ExtendedClass::class, function() use ($uninjectedSimpleClass) {
+            $creator->registerFactory(function() use ($uninjectedSimpleClass) {
                 return new ExtendedClass($uninjectedSimpleClass);
-            });
+            }, ExtendedClass::class);
 
             $injectedSimpleClass = new SimpleClass();
 
@@ -52,9 +52,9 @@
             $registry = (new ResourceRegistry())->registerClassResource($simpleClass);
             $creator = $this->getWithRegistry($registry);
 
-            $creator->registerFactory(ExtendedClass::class, function (SimpleClass $simpleClass) {
+            $creator->registerFactory(function (SimpleClass $simpleClass) {
                 return new ExtendedClass($simpleClass);
-            });
+            }, ExtendedClass::class);
 
             /** @var ExtendedClass $extendedClass */
             $extendedClass = $creator->create(ExtendedClass::class);
@@ -70,17 +70,17 @@
             $registry->registerClassResource($creator);
             $simpleClass = new SimpleClass();
 
-            $creator->registerFactory(MoreExtendedClass::class, function (Creator $creator) use ($simpleClass) {
+            $creator->registerFactory(function (Creator $creator) use ($simpleClass) {
                 return $creator->createInjected(MoreExtendedClass::class)
                     ->with($simpleClass);
-            });
+            }, MoreExtendedClass::class);
         }
 
         function testExpectsInvalidactoryException () {
+            $this->creator->registerFactory(null, SimpleClass::class);
             $this->expectException(InvalidFactoryException::class);
             $this->expectExceptionMessageRegExp('/Trying to register unsupported factory type ".+" for class ".+"/');
 
-            $this->creator->registerFactory(SimpleClass::class, null);
         }
 
     }

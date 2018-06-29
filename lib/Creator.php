@@ -86,13 +86,13 @@
         }
 
         /**
+         * @param Factory|callable $factory Factory class name, Factory instance or Factory closure
          * @param string $classResourceKey
-         * @param string|Factory|callable $factory Factory class name, Factory instance or Factory closure
          *
          * @return $this
          * @throws \Exception
          */
-        function registerFactory(string $classResourceKey, $factory) {
+        function registerFactory($factory, string $classResourceKey) {
             try {
                 $invokable = InvokableFactory::createFromAnyFactory($factory);
                 $this->resourceRegistry->registerFactoryForClassResource($classResourceKey, $invokable);
