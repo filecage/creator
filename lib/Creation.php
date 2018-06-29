@@ -37,30 +37,50 @@
         function create () {
             $creatable = $this->creatable;
 
+            $instance = $this->createInstanceWithRegistry($this->className, $creatable, $this->injectionRegistry) ?? $this->createInstanceWithRegistry($this->className, $creatable, $this->resourceRegistry);
+            if (!$instance) {
+                $instance = $this->createInstance($creatable);
+                $this->resourceRegistry->registerClassResource($instance);
+            }
+
+            return $instance;
+        }
+
+        /**
+         * @param string $className
+         * @param Creatable $creatable
+         * @param ResourceRegistry $registry
+         *
+         * @return mixed|object
+         * @throws Unresolvable
+         */
+        private function createInstanceWithRegistry (string $className, Creatable $creatable, ResourceRegistry $registry) {
+            // Does the registry already contain the resource?
+            $instance = $registry->getClassResource($className);
+            if ($instance !== null) {
+                return $instance;
+            }
+
             try {
-                // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
-                if ($this->injectionRegistry->containsAnyOf($creatable->getDependencies())) {
-                    return $this->createInstance($creatable);
+                // Does the registry contain a dependency that is required for this resource?
+                if ($registry->containsAnyOf($creatable->getDependencies())) {
+                    // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
+                    $instance = $this->createInstance($creatable);
                 }
             } catch (ReflectionException $e) {
                 throw new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()->getName());
             }
 
-            $instance = $this->resourceRegistry->getClassResource($this->className);
-
-            // todo: Injected Registry -> Injected Factory -> Global Registry -> Global Factory -> Uninstantiable Factory
-            if (!$instance) {
-                $factory = $this->injectionRegistry->getFactoryInvokableForClassResource($this->className) ?? $this->resourceRegistry->getFactoryInvokableForClassResource($this->className);
-                if ($factory !== null) {
-                    // todo: currently not caching factory creations, find a clever logic to let the Factory decide whether to cache
-                    $instance = (new Invocation($factory, $this->resourceRegistry, $this->injectionRegistry))->invoke();
+            // Does the registry contain a factory for this resource?
+            if ($instance === null) {
+                $factoryInvokable = $registry->getFactoryInvokableForClassResource($className);
+                if ($factoryInvokable === null) {
+                    return $instance;
                 }
+                $instance = $this->resolveRecursively($factoryInvokable);
             }
 
-            if (!$instance) {
-                $instance = $this->createInstance($creatable);
-                $this->resourceRegistry->registerClassResource($instance);
-            }
+            $registry->registerClassResource($instance);
 
             return $instance;
         }
@@ -73,6 +93,22 @@
          */
         private function createInstance(Creatable $creatable) {
             return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
+        }
+
+        /**
+         * @param Invokable $invokable
+         *
+         * @return mixed
+         */
+        private function resolveRecursively (Invokable $invokable) {
+            $invocation = new Invocation($invokable, $this->resourceRegistry, $this->injectionRegistry);
+            $instance = $invocation->invoke();
+
+            if ($instance instanceof Invokable) {
+                $instance = $this->resolveRecursively($instance);
+            }
+
+            return $instance;
         }
 
         /**
