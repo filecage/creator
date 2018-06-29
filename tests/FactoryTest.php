@@ -6,6 +6,7 @@
     use Creator\Exceptions\InvalidFactoryException;
     use Creator\ResourceRegistry;
     use Creator\Tests\Mocks\ExtendedClass;
+    use Creator\Tests\Mocks\ExtendedInterfaceFactory;
     use Creator\Tests\Mocks\MoreExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
 
@@ -18,6 +19,20 @@
             $creator->registerFactory( function() use ($simpleClass) {
                 return new ExtendedClass($simpleClass);
             }, ExtendedClass::class);
+
+            /** @var ExtendedClass $extendedClass */
+            $extendedClass = $creator->create(ExtendedClass::class);
+
+            $this->assertInstanceOf(ExtendedClass::class, $extendedClass);
+            $this->assertSame($simpleClass, $extendedClass->getSimpleClass());
+        }
+
+        function testExpectsFactoryClassToBeCalledForCreation () {
+            $creator = new Creator();
+
+            $simpleClass = new SimpleClass();
+            $extendedFactory = new ExtendedInterfaceFactory($simpleClass);
+            $creator->registerFactory($extendedFactory, ExtendedClass::class);
 
             /** @var ExtendedClass $extendedClass */
             $extendedClass = $creator->create(ExtendedClass::class);
