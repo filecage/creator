@@ -2,7 +2,6 @@
 
     namespace Creator\Tests;
 
-    use Creator\Exceptions\InvalidFactoryException;
     use Creator\Tests\Mocks\InvalidClass;
     use Creator\Tests\Mocks\InvalidFactoryInstanceTestUninstantiableClass;
     use Creator\Tests\Mocks\InvalidFactoryTestUninstantiableClass;
