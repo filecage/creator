@@ -70,18 +70,6 @@
             $this->assertNotSame($a, $b);
         }
 
-        function testExpectsDependencyCachingWhenForcingInstance () {
-            $simpleInstance = new SimpleClass();
-            $this->creator->registerClassResource($simpleInstance);
-
-            $a = $this->creator->create(MoreExtendedClass::class, true);
-            $b = $this->creator->create(MoreExtendedClass::class, true);
-
-            $this->assertSame($simpleInstance, $a->getSimpleClass());
-            $this->assertSame($simpleInstance, $b->getSimpleClass());
-            $this->assertSame($a->getAnotherSimpleClass(), $b->getAnotherSimpleClass());
-        }
-
         function testExpectsCreationWithRegisteredNullValue () {
             $creator = $this->getWithRegistry((new ResourceRegistry())->registerPrimitiveResource(SimpleClassWithPrimitiveDependencies::FROM_REGISTRY, null));
 
