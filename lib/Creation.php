@@ -2,6 +2,7 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\CreatorException;
     use Creator\Exceptions\Unresolvable;
     use Creator\Interfaces\Factory;
     use ReflectionException;
@@ -52,6 +53,7 @@
          * @param ResourceRegistry $registry
          *
          * @return mixed|object
+         * @throws CreatorException
          * @throws Unresolvable
          */
         private function createInstanceWithRegistry (string $className, Creatable $creatable, ResourceRegistry $registry) {
@@ -68,12 +70,17 @@
                     $instance = $this->createInstance($creatable);
                 }
             } catch (ReflectionException $e) {
-                throw new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()->getName());
+                $deferredException = new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()
+                    ->getName());
+            } catch (Unresolvable $exception) {
+                $deferredException = $exception;
             }
 
             // Does the registry contain a factory for this resource?
             if ($instance === null) {
                 $instance = $registry->getFactoryInvokableForClassResource($className);
+                if ($instance === null && isset($deferredException)) {
+                    throw $deferredException;
                 }
             }
 
