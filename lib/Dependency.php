@@ -15,6 +15,11 @@
         private $class;
 
         /**
+         * @var bool
+         */
+        private $isDefaultValueAvailable = false;
+
+        /**
          * @var mixed
          */
         private $defaultValue;
@@ -28,8 +33,8 @@
             $dependency = new static($dependencyParameter->getName());
             $dependency->class = $dependencyParameter->getClass();
 
-            // Be careful with default values, there is a *huge* difference between NULL and unset
             if ($dependencyParameter->isDefaultValueAvailable()) {
+                $dependency->isDefaultValueAvailable = true;
                 $dependency->defaultValue = $dependencyParameter->getDefaultValue();
             }
 
@@ -67,7 +72,7 @@
          * @return bool
          */
         function isDefaultValueAvailable () : bool {
-            return isset($this->defaultValue);
+            return $this->isDefaultValueAvailable;
         }
 
         /**
