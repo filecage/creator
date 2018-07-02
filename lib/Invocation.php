@@ -121,13 +121,7 @@
          * @return object
          */
         private function getClassResource ($classResourceKey) {
-            $instance = $this->injectionRegistry->getClassResource($classResourceKey) ?: $this->resourceRegistry->getClassResource($classResourceKey);
-
-            if (!$instance) {
-                $instance = (new Creation($classResourceKey, $this->resourceRegistry, $this->injectionRegistry))->create();
-            }
-
-            return $instance;
+            return (new Creation($classResourceKey, $this->resourceRegistry, $this->injectionRegistry))->create();
         }
 
         /**
