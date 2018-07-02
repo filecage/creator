@@ -77,10 +77,13 @@
                 }
             }
 
-            $registry->registerClassResource($instance);
             while ($instance instanceof Invokable) {
                 $invocation = new Invocation($instance, $this->resourceRegistry, $this->injectionRegistry);
                 $instance = $invocation->invoke();
+            }
+
+            if ($instance !== null) {
+                $registry->registerClassResource($instance);
             }
 
             return $instance;
