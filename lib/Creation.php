@@ -73,14 +73,15 @@
 
             // Does the registry contain a factory for this resource?
             if ($instance === null) {
-                $factoryInvokable = $registry->getFactoryInvokableForClassResource($className);
-                if ($factoryInvokable === null) {
-                    return $instance;
+                $instance = $registry->getFactoryInvokableForClassResource($className);
                 }
-                $instance = $this->resolveRecursively($factoryInvokable);
             }
 
             $registry->registerClassResource($instance);
+            while ($instance instanceof Invokable) {
+                $invocation = new Invocation($instance, $this->resourceRegistry, $this->injectionRegistry);
+                $instance = $invocation->invoke();
+            }
 
             return $instance;
         }
@@ -93,22 +94,6 @@
          */
         private function createInstance(Creatable $creatable) {
             return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
-        }
-
-        /**
-         * @param Invokable $invokable
-         *
-         * @return mixed
-         */
-        private function resolveRecursively (Invokable $invokable) {
-            $invocation = new Invocation($invokable, $this->resourceRegistry, $this->injectionRegistry);
-            $instance = $invocation->invoke();
-
-            if ($instance instanceof Invokable) {
-                $instance = $this->resolveRecursively($instance);
-            }
-
-            return $instance;
         }
 
         /**
