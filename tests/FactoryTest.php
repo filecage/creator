@@ -4,6 +4,8 @@
 
     use Creator\Creator;
     use Creator\ResourceRegistry;
+    use Creator\Tests\Mocks\ArbitraryClassOnlyResolvableByFactory;
+    use Creator\Tests\Mocks\ArbitraryFactory;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\ExtendedInterfaceFactory;
     use Creator\Tests\Mocks\MoreExtendedClass;
@@ -68,6 +70,69 @@
                 return $creator->createInjected(MoreExtendedClass::class)
                     ->with($simpleClass);
             }, MoreExtendedClass::class);
+        }
+
+        function testExpectsLazyFactoryCreation () {
+            $creator = new Creator();
+
+            $creator->registerFactory(ArbitraryFactory::class, ArbitraryClassOnlyResolvableByFactory::class);
+
+            /** @var ArbitraryClassOnlyResolvableByFactory $arbitraryClass */
+            $arbitraryClass = $creator->create(ArbitraryClassOnlyResolvableByFactory::class);
+
+            $this->assertInstanceOf(ArbitraryClassOnlyResolvableByFactory::class, $arbitraryClass);
+            $this->assertSame(ArbitraryFactory::PRIMITIVE_VALUE, $arbitraryClass->getPrimitiveValue());
+        }
+
+        function testExpectsCachedFactoryIfInjectedFactoryIsBoundLazy () {
+            $resourceRegistry = new ResourceRegistry();
+            $simpleClass = new SimpleClass();
+
+            $creator = $this->getWithRegistry($resourceRegistry);
+            $resourceRegistry->registerClassResource(new ArbitraryFactory($simpleClass, ArbitraryFactory::ANOTHER_PRIMITIVE_VALUE));
+
+            /** @var ArbitraryClassOnlyResolvableByFactory $arbitraryClass */
+            $arbitraryClass = $creator->createInjected(ArbitraryClassOnlyResolvableByFactory::class)
+                ->withFactory(ArbitraryFactory::class, ArbitraryClassOnlyResolvableByFactory::class)
+                ->create();
+
+            // assertions ensure https://github.com/filecage/creator/issues/5#issuecomment-401415849
+            $this->assertInstanceOf(ArbitraryClassOnlyResolvableByFactory::class, $arbitraryClass);
+            $this->assertSame(ArbitraryFactory::ANOTHER_PRIMITIVE_VALUE, $arbitraryClass->getPrimitiveValue());
+            $this->assertSame($simpleClass, $arbitraryClass->getSimpleClass());
+        }
+
+        function testExpectsNewFactoryIfInjectedFactoryIsBoundLazyAndFactoryDependenciesAreInjected () {
+            $resourceRegistry = new ResourceRegistry();
+            $injectedSimpleClass = new SimpleClass();
+            $globalSimpleClass = new SimpleClass();
+
+            $creator = $this->getWithRegistry($resourceRegistry);
+            $creator
+                ->registerClassResource(new ArbitraryFactory($globalSimpleClass))
+                ->registerFactory(ArbitraryFactory::class, ArbitraryClassOnlyResolvableByFactory::class);
+
+            /** @var ArbitraryClassOnlyResolvableByFactory $injectedArbitraryClass */
+            $injectedArbitraryClass = $creator->createInjected(ArbitraryClassOnlyResolvableByFactory::class)
+                ->with($injectedSimpleClass)
+                ->withFactory(ArbitraryFactory::class, ArbitraryClassOnlyResolvableByFactory::class)
+                ->create();
+
+            /** @var ArbitraryClassOnlyResolvableByFactory $injectedArbitraryClassFromGlobalFactory */
+            $injectedArbitraryClassFromGlobalFactory = $creator->createInjected(ArbitraryClassOnlyResolvableByFactory::class)
+                ->withFactory(ArbitraryFactory::class, ArbitraryClassOnlyResolvableByFactory::class)
+                ->create();
+
+            /** @var ArbitraryClassOnlyResolvableByFactory $globalArbitraryClass */
+            $globalArbitraryClass = $creator->create(ArbitraryClassOnlyResolvableByFactory::class);
+
+            $this->assertInstanceOf(ArbitraryClassOnlyResolvableByFactory::class, $injectedArbitraryClass);
+            $this->assertSame($globalSimpleClass, $globalArbitraryClass->getSimpleClass());
+            $this->assertSame($injectedSimpleClass, $injectedArbitraryClass->getSimpleClass());
+            $this->assertSame($globalArbitraryClass->getSimpleClass(), $injectedArbitraryClassFromGlobalFactory->getSimpleClass());
+
+            // Comparing the global arbitrary class with the injected arbitrary class from global factory is a double-check
+            //  of the previous cache test to ensure the same factory instance if we have no injected dependencies
         }
 
 
