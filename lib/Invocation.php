@@ -91,13 +91,13 @@
         }
 
         /**
-         * @param ReflectionParameter $dependency
+         * @param Dependency $dependency
          *
          * @return mixed|object
          * @throws Unresolvable
          * @throws ReflectionException
          */
-        private function resolveDependency (ReflectionParameter $dependency) {
+        private function resolveDependency (Dependency $dependency) {
             $class = $dependency->getClass();
             if ($class) {
                 return $this->getClassResource($class->getName());

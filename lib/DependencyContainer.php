@@ -5,24 +5,24 @@
     class DependencyContainer {
 
         /**
-         * @var \ReflectionParameter[]
+         * @var Dependency[]
          */
         private $dependencies = [];
 
 
         /**
-         * @param \ReflectionParameter $dependency
+         * @param Dependency $dependency
          *
          * @return $this
          */
-        function addDependency (\ReflectionParameter $dependency) {
+        function addDependency (Dependency $dependency) {
             $this->dependencies[] = $dependency;
 
             return $this;
         }
 
         /**
-         * @return \ReflectionParameter[]
+         * @return Dependency[]
          */
         function getDependencies () {
             return $this->dependencies;
