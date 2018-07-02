@@ -38,6 +38,19 @@
 
         /**
          * @param string $name
+         * @param Creatable $creatable
+         *
+         * @return Dependency
+         */
+        static function createFromCreatable (string $name, Creatable $creatable) : Dependency {
+            $dependency = new static($name);
+            $dependency->class = $creatable->getReflectionClass();
+
+            return $dependency;
+        }
+
+        /**
+         * @param string $name
          */
         function __construct (string $name) {
             $this->name = $name;
