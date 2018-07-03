@@ -70,6 +70,12 @@
                 return $creator->createInjected(MoreExtendedClass::class)
                     ->with($simpleClass);
             }, MoreExtendedClass::class);
+
+            /** @var MoreExtendedClass $moreExtendedClass */
+            $moreExtendedClass = $creator->create(MoreExtendedClass::class);
+
+            $this->assertInstanceOf(MoreExtendedClass::class, $moreExtendedClass);
+            $this->assertSame($simpleClass, $moreExtendedClass->getSimpleClass());
         }
 
         function testExpectsLazyFactoryCreation () {
