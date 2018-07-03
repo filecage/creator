@@ -68,7 +68,8 @@
 
             $creator->registerFactory(function (Creator $creator) use ($simpleClass) {
                 return $creator->createInjected(MoreExtendedClass::class)
-                    ->with($simpleClass);
+                    ->with($simpleClass)
+                    ->create();
             }, MoreExtendedClass::class);
 
             /** @var MoreExtendedClass $moreExtendedClass */
