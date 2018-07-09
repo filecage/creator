@@ -254,4 +254,4 @@ All exceptions derive from `Creator\Exceptions\CreatorException`. Use this class
 
 Additionally, there are more specific exceptions:
 * If Creator is unable to resolve a dependency, it will throw `Creator\Exceptions\Unresolvable`.
-* If you are registering a factory which is not a `callable` or an instance of `Creator\Interfaces\Factory`, it will throw `Creator\Exceptions\InvalidFactory`
+* If you are registering a factory which is not a `callable` or an instance of / a class name of a class that implements `Creator\Interfaces\Factory`, it will throw `Creator\Exceptions\InvalidFactory`
