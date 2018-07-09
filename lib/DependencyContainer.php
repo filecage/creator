@@ -28,4 +28,18 @@
             return $this->dependencies;
         }
 
+        /**
+         * @param DependencyContainer $dependencyContainer
+         *
+         * @return DependencyContainer
+         */
+        function mergeWith (DependencyContainer $dependencyContainer) {
+            $clone = clone $this;
+            $clone->dependencies = array_merge($clone->dependencies, array_filter($dependencyContainer->dependencies, function(Dependency $dependency) use ($clone){
+                return !in_array($dependency, $clone->dependencies);
+            }));
+
+            return $clone;
+        }
+
     }

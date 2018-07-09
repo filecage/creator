@@ -84,7 +84,9 @@ Injecting instances is supported as well.
 
 ## Factories
 If you have resources that can not be created without additional logic, but also should only be created once another component depends them, you can register a factory for this factory.
-A factory can be a callable or an instance of `Creator\Interfaces\Factory` and can be registered for any class resource, i.e. interfaces, abstracts or normal classes.
+A factory can be a callable, an instance of `Creator\Interfaces\Factory` or a class string of a Factory (see [lazy bound factories](#lazy-bound-factories)) and can be registered for any class resource, i.e. interfaces, abstracts or normal classes.
+
+*Please note* that factory classes share the interface with Factories for [uninstantiable class factories](#uninstantiable-classes) but are different features and are being called at different points in the creation order.
 
 ### Global Factories
 ````php
@@ -123,8 +125,75 @@ Of course, you can also register a factory as injection:
 ````
 Injected factories overrule globally registered factories and even globally registered resources. However, they do not overrule injected resources. (Creation order routine is: Injected Instance -> Injected Factory -> Global Instance -> Global Factory -> Create Instance)
 
+### Lazy Bound Factories
+If you have factories that should not be created until they are required, you can register a lazy factory by using it's class name:
+
+````php
+<?php
+
+    $creator->registerFactory(SimpleFactory::class, SimpleClass::class);
+    
+    // Creates a SimpleClass with SimpleFactory
+    $simpleClass = $creator->create(SimpleClass::class);
+````
+
+All lazy bound factories are stored to and read from the ResourceRegistry that defined them:
+````php
+<?php
+
+    class SimpleFactory implements Factory {
+        
+        function __construct(SimpleClass $simpleClass) {
+            $this->simpleClass = $simpleClass;
+        }
+        
+        function createInstance() {
+            return $this->simpleClass;
+        }
+        
+    }
+
+    $creator->registerFactory(SimpleFactory::class, SimpleClass::class);
+    
+    $simpleClass = new SimpleClass();
+    $simpleFactory = new SimpleFactory($simpleClass);
+    
+    $creator->registerClassResource($simpleFactory);
+    
+    $generatedSimpleClass = $creator->create(SimpleClass::class);
+    if ($simpleClass === $generatedSimpleClass) {
+        echo 'Congratulations, this example is completely useless and works!';
+    }
+````
+
 ### Factory Result Caching
 All factory results are registered to their corresponding `ResourceRegistry`, i.e. a injected factory will store it's result to the injected registry and thereby make it's created resource available during this creation process only.
+The only exception is a lazy bound factory with an injected dependency; in that case, the result of the factory is cached in the injection registry.
+
+````php
+<?php
+
+    class ArbitraryFactory implements Factory {
+        
+        function __construct(SimpleClass $simpleClass) {
+            $this->simpleClass = $simpleClass;
+        }
+        
+        function createInstance() {
+            return $this->simpleClass;
+        }
+        
+    }
+
+    $creator->registerFactory(ArbitraryFactory::class, ArbitraryClassWithSimpleClassDependency::class);
+    
+    $injectedArbitraryClass = $creator->createInjected(ArbitraryClassWithSimpleClassDependency::class)
+        ->with(new SimpleClass())
+        ->create();
+    
+    $anyArbitraryClass = $creator->create(ArbitraryClassWithSimpleClassDependency::class);
+````
+In the example above, the instances of `ArbitraryClassWithSimpleClassDependency` will not be the same. Creator detects that `SimpleClass` is a dependency of the registered factory and therefore create a new instance of `ArbitraryFactory` with the injected `SimpleClass`. This new factory instance is stored to the injected registry and will not affect other creations.
 
 ## Uninstantiable Classes
 ### Singletons
@@ -185,4 +254,4 @@ All exceptions derive from `Creator\Exceptions\CreatorException`. Use this class
 
 Additionally, there are more specific exceptions:
 * If Creator is unable to resolve a dependency, it will throw `Creator\Exceptions\Unresolvable`.
-* If you are registering a factory which is not a `callable` or an instance of `Creator\Interfaces\Factory`, it will throw `Creator\Exceptions\InvalidFactory`
+* If you are registering a factory which is not a `callable` or an instance of / a class name of a class that implements `Creator\Interfaces\Factory`, it will throw `Creator\Exceptions\InvalidFactory`

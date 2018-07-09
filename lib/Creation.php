@@ -2,6 +2,7 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\CreatorException;
     use Creator\Exceptions\Unresolvable;
     use Creator\Interfaces\Factory;
     use ReflectionException;
@@ -52,6 +53,7 @@
          * @param ResourceRegistry $registry
          *
          * @return mixed|object
+         * @throws CreatorException
          * @throws Unresolvable
          */
         private function createInstanceWithRegistry (string $className, Creatable $creatable, ResourceRegistry $registry) {
@@ -68,19 +70,25 @@
                     $instance = $this->createInstance($creatable);
                 }
             } catch (ReflectionException $e) {
-                throw new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()->getName());
+                $deferredException = new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()
+                    ->getName());
+            } catch (Unresolvable $exception) {
+                $deferredException = $exception;
             }
 
             // Does the registry contain a factory for this resource?
             if ($instance === null) {
-                $factoryInvokable = $registry->getFactoryInvokableForClassResource($className);
-                if ($factoryInvokable === null) {
-                    return $instance;
+                $instance = $registry->getFactoryInvokableForClassResource($className);
+                if ($instance !== null) {
+                    $instance = (new Fabrication($instance, $this->resourceRegistry, $this->injectionRegistry, $registry))->fabricate();
                 }
-                $instance = $this->resolveRecursively($factoryInvokable);
+            } else {
+                $registry->registerClassResource($instance);
             }
 
-            $registry->registerClassResource($instance);
+            if ($instance === null && isset($deferredException)) {
+                throw $deferredException;
+            }
 
             return $instance;
         }
@@ -93,22 +101,6 @@
          */
         private function createInstance(Creatable $creatable) {
             return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
-        }
-
-        /**
-         * @param Invokable $invokable
-         *
-         * @return mixed
-         */
-        private function resolveRecursively (Invokable $invokable) {
-            $invocation = new Invocation($invokable, $this->resourceRegistry, $this->injectionRegistry);
-            $instance = $invocation->invoke();
-
-            if ($instance instanceof Invokable) {
-                $instance = $this->resolveRecursively($instance);
-            }
-
-            return $instance;
         }
 
         /**
