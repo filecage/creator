@@ -79,18 +79,15 @@
             // Does the registry contain a factory for this resource?
             if ($instance === null) {
                 $instance = $registry->getFactoryInvokableForClassResource($className);
-                if ($instance === null && isset($deferredException)) {
-                    throw $deferredException;
+                if ($instance !== null) {
+                    $instance = (new Fabrication($instance, $this->resourceRegistry, $this->injectionRegistry, $registry))->fabricate();
                 }
-            }
-
-            while ($instance instanceof Invokable) {
-                $invocation = new Invocation($instance, $this->resourceRegistry, $this->injectionRegistry);
-                $instance = $invocation->invoke();
-            }
-
-            if ($instance !== null) {
+            } else {
                 $registry->registerClassResource($instance);
+            }
+
+            if ($instance === null && isset($deferredException)) {
+                throw $deferredException;
             }
 
             return $instance;
