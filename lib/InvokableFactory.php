@@ -50,8 +50,10 @@
          * @return DependencyContainer
          */
         function getDependencies () {
-            return (new DependencyContainer())
+            $dependencyContainer = (new DependencyContainer())
                 ->addDependency(Dependency::createFromCreatable('factory', $this->factoryCreatable));
+
+            return $dependencyContainer->mergeWith(parent::getDependencies()); // merge with actual dependencies for signature collection
         }
 
         /**
