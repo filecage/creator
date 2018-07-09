@@ -5,7 +5,9 @@
     use Creator\Creator;
     use Creator\ResourceRegistry;
     use Creator\Tests\Mocks\ArbitraryClassOnlyResolvableByFactory;
+    use Creator\Tests\Mocks\ArbitraryClassWithStringValue;
     use Creator\Tests\Mocks\ArbitraryFactory;
+    use Creator\Tests\Mocks\ArbitraryFactoryWithStringValue;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\ExtendedInterfaceFactory;
     use Creator\Tests\Mocks\MoreExtendedClass;
@@ -110,26 +112,24 @@
         }
 
         function testShouldCreateNewFactoryIfFactoryDependencyIsInjected () {
-            $resourceRegistry = new ResourceRegistry();
-            $injectedSimpleClass = new SimpleClass();
-            $globalSimpleClass = new SimpleClass();
-
-            $creator = $this->getWithRegistry($resourceRegistry);
+            $creator = new Creator();
             $creator
-                ->registerClassResource(new ArbitraryFactory($globalSimpleClass))
-                ->registerFactory(ArbitraryFactory::class, ArbitraryClassOnlyResolvableByFactory::class);
+                ->registerClassResource(new ArbitraryClassWithStringValue(ArbitraryFactory::ANOTHER_PRIMITIVE_VALUE))
+                ->registerFactory(ArbitraryFactoryWithStringValue::class, ArbitraryClassOnlyResolvableByFactory::class);
+
+            $injectedArbitraryClassWithStringValue = new ArbitraryClassWithStringValue(ArbitraryFactory::YET_ANOTHER_PRIMITIVE_VALUE);
 
             /** @var ArbitraryClassOnlyResolvableByFactory $injectedArbitraryClass */
             $injectedArbitraryClass = $creator->createInjected(ArbitraryClassOnlyResolvableByFactory::class)
-                ->with($injectedSimpleClass)
+                ->with($injectedArbitraryClassWithStringValue)
                 ->create();
 
             /** @var ArbitraryClassOnlyResolvableByFactory $globalArbitraryClass */
             $globalArbitraryClass = $creator->create(ArbitraryClassOnlyResolvableByFactory::class);
 
-            $this->assertInstanceOf(ArbitraryClassOnlyResolvableByFactory::class, $injectedArbitraryClass);
-            $this->assertSame($globalSimpleClass, $globalArbitraryClass->getSimpleClass());
-            $this->assertSame($injectedSimpleClass, $injectedArbitraryClass->getSimpleClass());
+            $this->assertInstanceOf(ArbitraryClassOnlyResolvableByFactory::class, $globalArbitraryClass);
+            $this->assertSame(ArbitraryFactory::ANOTHER_PRIMITIVE_VALUE, $globalArbitraryClass->getPrimitiveValue());
+            $this->assertSame(ArbitraryFactory::YET_ANOTHER_PRIMITIVE_VALUE, $injectedArbitraryClass->getPrimitiveValue());
         }
 
 
