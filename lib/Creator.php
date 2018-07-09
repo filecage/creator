@@ -2,7 +2,9 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\InvalidFactory;
     use Creator\Exceptions\Unresolvable;
+    use Creator\Interfaces\Factory;
 
     class Creator {
 
@@ -79,6 +81,24 @@
          */
         function registerPrimitiveResource ($resourceKey, $value) {
             $this->resourceRegistry->registerPrimitiveResource($resourceKey, $value);
+
+            return $this;
+        }
+
+        /**
+         * @param Factory|callable $factory Factory class name, Factory instance or Factory closure
+         * @param string $classResourceKey
+         *
+         * @return $this
+         * @throws \Exception
+         */
+        function registerFactory($factory, string $classResourceKey) {
+            try {
+                $invokable = InvokableFactory::createFromAnyFactory($factory);
+                $this->resourceRegistry->registerFactoryForClassResource($classResourceKey, $invokable);
+            } catch (InvalidFactory $e) {
+                throw $e->enrichClass($classResourceKey);
+            }
 
             return $this;
         }

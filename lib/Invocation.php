@@ -2,7 +2,9 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\InvalidFactory;
     use Creator\Exceptions\Unresolvable;
+    use Creator\Interfaces\Factory;
     use ReflectionException;
     use ReflectionParameter;
 
@@ -58,6 +60,24 @@
         }
 
         /**
+         * @param Factory|callable $factory
+         * @param string $resourceKey
+         *
+         * @return $this
+         * @throws InvalidFactory
+         */
+        function withFactory ($factory, string $resourceKey) {
+            try {
+                $invokable = InvokableFactory::createFromAnyFactory($factory);
+                $this->injectionRegistry->registerFactoryForClassResource($resourceKey, $invokable);
+            } catch (InvalidFactory $e) {
+                throw $e->enrichClass($resourceKey);
+            }
+
+            return $this;
+        }
+
+        /**
          * @return array
          */
         private function resolveDependencies () {
@@ -71,13 +91,13 @@
         }
 
         /**
-         * @param ReflectionParameter $dependency
+         * @param Dependency $dependency
          *
          * @return mixed|object
          * @throws Unresolvable
          * @throws ReflectionException
          */
-        private function resolveDependency (ReflectionParameter $dependency) {
+        private function resolveDependency (Dependency $dependency) {
             $class = $dependency->getClass();
             if ($class) {
                 return $this->getClassResource($class->getName());
@@ -101,13 +121,7 @@
          * @return object
          */
         private function getClassResource ($classResourceKey) {
-            $instance = $this->injectionRegistry->getClassResource($classResourceKey) ?: $this->resourceRegistry->getClassResource($classResourceKey);
-
-            if (!$instance) {
-                $instance = (new Creation($classResourceKey, $this->resourceRegistry, $this->injectionRegistry))->create();
-            }
-
-            return $instance;
+            return (new Creation($classResourceKey, $this->resourceRegistry, $this->injectionRegistry))->create();
         }
 
         /**

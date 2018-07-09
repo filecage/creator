@@ -56,7 +56,7 @@
             }
 
             foreach ($this->invokableReflection->getParameters() as $parameter) {
-                $dependencies->addDependency($parameter);
+                $dependencies->addDependency(Dependency::createFromReflectionParameter($parameter));
             }
 
             return $dependencies;

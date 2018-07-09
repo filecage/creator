@@ -17,6 +17,11 @@
         private $primitiveResources = [];
 
         /**
+         * @var Invokable[]
+         */
+        private $factories = [];
+
+        /**
          * @var callable
          */
         private $onRegistration;
@@ -49,6 +54,27 @@
             }
 
             return $this->classResources[$classResourceKey]->getInstance();
+        }
+
+        /**
+         * @param string $classResourceKey
+         * @param Invokable $factory
+         *
+         * @return $this
+         */
+        function registerFactoryForClassResource (string $classResourceKey, Invokable $factory) {
+            $this->factories[$classResourceKey] = $factory;
+
+            return $this;
+        }
+
+        /**
+         * @param string $classResourceKey
+         *
+         * @return Invokable|null
+         */
+        function getFactoryInvokableForClassResource (string $classResourceKey) : ?Invokable {
+            return $this->factories[$classResourceKey] ?? null;
         }
 
         /**

@@ -3,8 +3,8 @@
     namespace Creator\Tests;
 
     use Creator\ResourceRegistry;
+    use Creator\Tests\Mocks\DefaultValuedClass;
     use Creator\Tests\Mocks\ExtendedClass;
-    use Creator\Tests\Mocks\MoreExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
     use Creator\Tests\Mocks\SimpleClassWithPrimitiveDependencies;
 
@@ -70,18 +70,6 @@
             $this->assertNotSame($a, $b);
         }
 
-        function testExpectsDependencyCachingWhenForcingInstance () {
-            $simpleInstance = new SimpleClass();
-            $this->creator->registerClassResource($simpleInstance);
-
-            $a = $this->creator->create(MoreExtendedClass::class, true);
-            $b = $this->creator->create(MoreExtendedClass::class, true);
-
-            $this->assertSame($simpleInstance, $a->getSimpleClass());
-            $this->assertSame($simpleInstance, $b->getSimpleClass());
-            $this->assertSame($a->getAnotherSimpleClass(), $b->getAnotherSimpleClass());
-        }
-
         function testExpectsCreationWithRegisteredNullValue () {
             $creator = $this->getWithRegistry((new ResourceRegistry())->registerPrimitiveResource(SimpleClassWithPrimitiveDependencies::FROM_REGISTRY, null));
 
@@ -89,6 +77,16 @@
             $simpleInstance = $creator->create(SimpleClassWithPrimitiveDependencies::class);
 
             $this->assertNull($simpleInstance->getFromRegistry());
+        }
+
+        function testExpectsCreationWithDefaultValues () {
+            /** @var DefaultValuedClass $defaultValuedClass */
+            $defaultValuedClass = $this->creator->create(DefaultValuedClass::class);
+
+            $this->assertInstanceOf(DefaultValuedClass::class, $defaultValuedClass);
+            $this->assertSame(123, $defaultValuedClass->getDefaultIntValue());
+            $this->assertSame('foobar', $defaultValuedClass->getDefaultStringValue());
+            $this->assertNull($defaultValuedClass->getDefaultNullValue());
         }
 
     }

@@ -2,6 +2,7 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\CreatorException;
     use Creator\Exceptions\Unresolvable;
     use Creator\Interfaces\Factory;
     use ReflectionException;
@@ -37,19 +38,56 @@
         function create () {
             $creatable = $this->creatable;
 
-            try {
-                // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
-                if ($this->injectionRegistry->containsAnyOf($creatable->getDependencies())) {
-                    return $this->createInstance($creatable);
-                }
-            } catch (ReflectionException $e) {
-                throw new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()->getName());
-            }
-
-            $instance = $this->resourceRegistry->getClassResource($this->className);
+            $instance = $this->createInstanceWithRegistry($this->className, $creatable, $this->injectionRegistry) ?? $this->createInstanceWithRegistry($this->className, $creatable, $this->resourceRegistry);
             if (!$instance) {
                 $instance = $this->createInstance($creatable);
                 $this->resourceRegistry->registerClassResource($instance);
+            }
+
+            return $instance;
+        }
+
+        /**
+         * @param string $className
+         * @param Creatable $creatable
+         * @param ResourceRegistry $registry
+         *
+         * @return mixed|object
+         * @throws CreatorException
+         * @throws Unresolvable
+         */
+        private function createInstanceWithRegistry (string $className, Creatable $creatable, ResourceRegistry $registry) {
+            // Does the registry already contain the resource?
+            $instance = $registry->getClassResource($className);
+            if ($instance !== null) {
+                return $instance;
+            }
+
+            try {
+                // Does the registry contain a dependency that is required for this resource?
+                if ($registry->containsAnyOf($creatable->getDependencies())) {
+                    // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
+                    $instance = $this->createInstance($creatable);
+                }
+            } catch (ReflectionException $e) {
+                $deferredException = new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()
+                    ->getName());
+            } catch (Unresolvable $exception) {
+                $deferredException = $exception;
+            }
+
+            // Does the registry contain a factory for this resource?
+            if ($instance === null) {
+                $instance = $registry->getFactoryInvokableForClassResource($className);
+                if ($instance !== null) {
+                    $instance = (new Fabrication($instance, $this->resourceRegistry, $this->injectionRegistry, $registry))->fabricate();
+                }
+            } else {
+                $registry->registerClassResource($instance);
+            }
+
+            if ($instance === null && isset($deferredException)) {
+                throw $deferredException;
             }
 
             return $instance;

@@ -2,6 +2,6 @@
 
     namespace Creator\Exceptions;
 
-    abstract class CreatorException extends \Exception {
+    class CreatorException extends \Exception {
 
     }
