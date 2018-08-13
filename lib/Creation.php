@@ -58,7 +58,7 @@
          */
         private function createInstanceWithRegistry (string $className, Creatable $creatable, ResourceRegistry $registry) {
             // Does the registry already contain the resource?
-            $instance = $registry->getClassResource($className);
+            $instance = $registry->getClassResource($className) ?? $registry->findFulfillingInstance($creatable);
             if ($instance !== null) {
                 return $instance;
             }
