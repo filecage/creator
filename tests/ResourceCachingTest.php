@@ -3,6 +3,9 @@
     namespace Creator\Tests;
 
     use Creator\Creator;
+    use Creator\Tests\Mocks\ArbitraryClassOnlyResolvableByFactory;
+    use Creator\Tests\Mocks\ArbitraryFactory;
+    use Creator\Tests\Mocks\ArbitraryInterface;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\MoreExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
@@ -55,6 +58,20 @@
             $this->assertSame($simpleInstance, $a->getSimpleClass());
             $this->assertSame($simpleInstance, $b->getSimpleClass());
             $this->assertSame($a->getAnotherSimpleClass(), $b->getAnotherSimpleClass());
+        }
+
+        function testExpectsInterfaceFactoryResultCaching () {
+            $creator = new Creator();
+
+            $creator->registerFactory(function() {
+                return new ArbitraryClassOnlyResolvableByFactory(new SimpleClass(), ArbitraryFactory::PRIMITIVE_VALUE);
+            }, ArbitraryInterface::class);
+
+            $firstArbitraryImplementation = $creator->create(ArbitraryInterface::class);
+            $secondArbitraryImplementation = $creator->create(ArbitraryInterface::class);
+
+            $this->assertInstanceOf(ArbitraryInterface::class, $firstArbitraryImplementation);
+            $this->assertSame($firstArbitraryImplementation, $secondArbitraryImplementation);
         }
 
     }

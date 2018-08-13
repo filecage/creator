@@ -2,7 +2,7 @@
 
     namespace Creator\Tests\Mocks;
 
-    class ArbitraryClassOnlyResolvableByFactory {
+    class ArbitraryClassOnlyResolvableByFactory implements ArbitraryInterface {
 
         /**
          * @var SimpleClass
