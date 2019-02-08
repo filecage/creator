@@ -13,7 +13,7 @@
          */
         protected $creator;
 
-        function setUp () {
+        function setUp () : void {
             $this->creator = new Creator();
         }
 

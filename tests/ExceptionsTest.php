@@ -2,6 +2,8 @@
 
     namespace Creator\Tests;
 
+    use Creator\Exceptions\InvalidFactory;
+    use Creator\Exceptions\Unresolvable;
     use Creator\Tests\Mocks\InvalidClass;
     use Creator\Tests\Mocks\InvalidFactoryInstanceTestUninstantiableClass;
     use Creator\Tests\Mocks\InvalidFactoryTestUninstantiableClass;
@@ -11,59 +13,52 @@
 
     class ExceptionsTest extends AbstractCreatorTest {
 
-        /**
-         * @expectedException \Creator\Exceptions\Unresolvable
-         * @expectedExceptionMessage Class is neither instantiable nor implements Singleton interface
-         */
         function testShouldThrowExceptionIfClassIsUninstantiableAndNoSingletonAndHasNoFactory () {
+            $this->expectException(Unresolvable::class);
+            $this->expectExceptionMessage('Class is neither instantiable nor implements Singleton interface');
+
             $this->creator->create(InvalidClass::class);
         }
 
-        /**
-         * @expectedException \Creator\Exceptions\Unresolvable
-         * @expectedExceptionMessage Dependencies can not be resolved
-         */
         function testShouldThrowExceptionIfClassRequiresInexistentDependency () {
+            $this->expectException(Unresolvable::class);
+            $this->expectExceptionMessage('Dependencies can not be resolved');
+
             $this->creator->create(InvalidRequirementClass::class);
         }
 
-        /**
-         * @expectedException \Creator\Exceptions\Unresolvable
-         * @expectedExceptionMessageRegExp /^Factory \S+ does not implement required interface/
-         */
         function testShouldThrowExceptionIfFactoryDoesNotImplementInterface () {
+            $this->expectException(Unresolvable::class);
+            $this->expectExceptionMessageRegExp('/^Factory \S+ does not implement required interface/');
+
             $this->creator->create(InvalidFactoryTestUninstantiableClass::class);
         }
 
-        /**
-         * @expectedException \Creator\Exceptions\Unresolvable
-         * @expectedExceptionMessageRegExp /^Create method of factory \S+ did not return instance/
-         */
         function testShouldThrowExceptionIfFactoryDoesNotReturnRequestedInstance () {
+            $this->expectException(Unresolvable::class);
+            $this->expectExceptionMessageRegExp('/^Create method of factory \S+ did not return instance/');
+
             $this->creator->create(InvalidFactoryInstanceTestUninstantiableClass::class);
         }
 
-        /**
-         * @expectedException \Creator\Exceptions\Unresolvable
-         * @expectedExceptionMessage unknown primitive resource
-         */
         function testShouldThrowExceptionIfClassRequiresUnknownPrimitiveResource () {
+            $this->expectException(Unresolvable::class);
+            $this->expectExceptionMessage('unknown primitive resource');
+
             $this->creator->create(InvalidPrimitiveDependencyClass::class);
         }
 
-        /**
-         * @expectedException \Creator\Exceptions\InvalidFactory
-         * @expectedExceptionMessageRegExp /^Trying to register unsupported factory type ".+" for class ".+"$/
-         */
         function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToGlobalRegistry () {
+            $this->expectException(InvalidFactory::class);
+            $this->expectExceptionMessageRegExp('/^Trying to register unsupported factory type ".+" for class ".+"$/');
+
             $this->creator->registerFactory(null, SimpleClass::class);
         }
 
-        /**
-         * @expectedException \Creator\Exceptions\InvalidFactory
-         * @expectedExceptionMessageRegExp /^Trying to register unsupported factory type ".+" for class ".+"$/
-         */
         function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToInjectedRegistry () {
+            $this->expectException(InvalidFactory::class);
+            $this->expectExceptionMessageRegExp('/^Trying to register unsupported factory type ".+" for class ".+"$/');
+
             $this->creator->createInjected(SimpleClass::class)->withFactory(null, SimpleClass::class);
         }
 
