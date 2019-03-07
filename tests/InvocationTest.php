@@ -3,6 +3,7 @@
     namespace Creator\Tests;
 
     use Creator\Tests\Mocks\AnotherSimpleClass;
+    use Creator\Tests\Mocks\CallableClass;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\MoreExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
@@ -14,6 +15,12 @@
             $this->creator->invoke(function(SimpleClass $simpleClass) use ($that) {
                 $that->assertInstanceOf(SimpleClass::class, $simpleClass);
             });
+        }
+
+        function testExpectsInvocationWithCallableClass () {
+            $callableClass = new CallableClass();
+
+            $this->assertInstanceOf(AnotherSimpleClass::class, $this->creator->invoke($callableClass));
         }
 
         function testExpectsInvocationWithInjectedInstance () {
