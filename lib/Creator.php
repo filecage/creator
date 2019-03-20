@@ -24,7 +24,6 @@
          * @param string $className
          * @param bool $forceInstance Whether the class will be loaded from (or stored to) registry
          *
-         * @throws \Exception
          * @throws Unresolvable
          * @return object
          */
@@ -90,7 +89,7 @@
          * @param string $classResourceKey
          *
          * @return $this
-         * @throws \Exception
+         * @throws InvalidFactory
          */
         function registerFactory($factory, string $classResourceKey) {
             try {
