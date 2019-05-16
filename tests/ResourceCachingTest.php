@@ -74,4 +74,18 @@
             $this->assertSame($firstArbitraryImplementation, $secondArbitraryImplementation);
         }
 
+        function testExpectsFactoryResultResultCachingForAnonymousResults () {
+            $creator = new Creator();
+
+            $creator->registerFactory(function() {
+                return new class (new SimpleClass(), ArbitraryFactory::PRIMITIVE_VALUE) extends ArbitraryClassOnlyResolvableByFactory {};
+            }, ArbitraryClassOnlyResolvableByFactory::class);
+
+            $firstArbitraryImplementation = $creator->create(ArbitraryClassOnlyResolvableByFactory::class);
+            $secondArbitraryImplementation = $creator->create(ArbitraryClassOnlyResolvableByFactory::class);
+
+            $this->assertInstanceOf(ArbitraryClassOnlyResolvableByFactory::class, $firstArbitraryImplementation);
+            $this->assertSame($firstArbitraryImplementation, $secondArbitraryImplementation);
+        }
+
     }
