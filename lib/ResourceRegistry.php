@@ -28,16 +28,20 @@
 
         /**
          * @param object $instance
-         * @param string $classResourceKey
+         * @param string ...$classResourceKeys
          *
          * @return $this
          */
-        function registerClassResource ($instance, $classResourceKey = null) {
-            $classResourceKey = $classResourceKey ?: get_class($instance);
-            $this->classResources[$classResourceKey] = ClassResource::createFromInstance($instance);
+        function registerClassResource ($instance, ...$classResourceKeys) {
+            $resource = ClassResource::createFromInstance($instance);
+            $classResourceKeys[] = get_class($instance);
+
+            foreach ($classResourceKeys as $classResourceKey) {
+                $this->classResources[$classResourceKey] = $resource;
+            }
 
             if ($this->onRegistration) {
-                call_user_func($this->onRegistration, $instance, $classResourceKey);
+                call_user_func($this->onRegistration, $instance, ...$classResourceKeys);
             }
 
             return $this;
@@ -163,9 +167,13 @@
         function cloneWithout ($exceptedClass) {
             $clone = clone $this;
             unset($clone->classResources[$exceptedClass]);
-            $clone->onRegistration(function($instance, $class) use ($exceptedClass){
-                if ($class !== $exceptedClass) {
-                    $this->registerClassResource($instance, $class);
+            $clone->onRegistration(function($instance, ...$classes) use ($exceptedClass){
+                $classes = array_filter($classes, function($class) use ($exceptedClass) {
+                    return $class !== $exceptedClass;
+                });
+
+                if (!empty($classes)) {
+                    $this->registerClassResource($instance, ...$classes);
                 }
             });
 
