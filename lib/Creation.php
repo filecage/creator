@@ -41,7 +41,7 @@
             $instance = $this->createInstanceWithRegistry($this->className, $creatable, $this->injectionRegistry) ?? $this->createInstanceWithRegistry($this->className, $creatable, $this->resourceRegistry);
             if (!$instance) {
                 $instance = $this->createInstance($creatable);
-                $this->resourceRegistry->registerClassResource($instance);
+                $this->resourceRegistry->registerClassResource($instance, $this->className);
             }
 
             return $instance;
@@ -80,7 +80,7 @@
             if ($instance === null) {
                 $instance = $registry->getFactoryInvokableForClassResource($className);
                 if ($instance !== null) {
-                    $instance = (new Fabrication($instance, $this->resourceRegistry, $this->injectionRegistry, $registry))->fabricate();
+                    $instance = (new Fabrication($className, $instance, $this->resourceRegistry, $this->injectionRegistry, $registry))->fabricate();
                 }
             } else {
                 $registry->registerClassResource($instance);
