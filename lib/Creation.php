@@ -41,7 +41,7 @@
             $instance = $this->createInstanceWithRegistry($this->className, $creatable, $this->injectionRegistry) ?? $this->createInstanceWithRegistry($this->className, $creatable, $this->resourceRegistry);
             if (!$instance) {
                 $instance = $this->createInstance($creatable);
-                $this->resourceRegistry->registerClassResource($instance, $this->className);
+                $this->resourceRegistry->registerClassResource($instance);
             }
 
             return $instance;

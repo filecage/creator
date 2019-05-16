@@ -62,12 +62,12 @@
 
         /**
          * @param object $instance
-         * @param string $classResourceKey
+         * @param string ...$classResourceKey
          *
          * @return $this
          */
-        function registerClassResource ($instance, $classResourceKey = null) {
-            $this->resourceRegistry->registerClassResource($instance, $classResourceKey);
+        function registerClassResource ($instance, ...$classResourceKey) {
+            $this->resourceRegistry->registerClassResource($instance, ...$classResourceKey);
 
             return $this;
         }

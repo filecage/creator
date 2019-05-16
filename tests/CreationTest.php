@@ -3,6 +3,7 @@
     namespace Creator\Tests;
 
     use Creator\ResourceRegistry;
+    use Creator\Tests\Mocks\AnotherSimpleClass;
     use Creator\Tests\Mocks\DefaultValuedClass;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\SimpleClass;
@@ -42,6 +43,16 @@
             $created = $this->creator->create(SimpleClass::class);
 
             $this->assertSame($instance, $created);
+        }
+
+        function testExpectsCorrectOverwritingOfClassResources () {
+            $instance = new SimpleClass();
+            $this->creator->registerClassResource($instance, AnotherSimpleClass::class);
+            $anyClass = $this->creator->create(AnotherSimpleClass::class);
+            $simpleClass = $this->creator->create(SimpleClass::class);
+
+            $this->assertNotSame($instance, $simpleClass, 'Class Resource may not be registered to registry if resource key has been overwritten');
+            $this->assertSame($instance, $anyClass);
         }
 
         function testExpectsInstanceWithPrimitiveDependencies () {

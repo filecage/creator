@@ -34,7 +34,9 @@
          */
         function registerClassResource ($instance, ...$classResourceKeys) {
             $resource = ClassResource::createFromInstance($instance);
-            $classResourceKeys[] = get_class($instance);
+            if (empty($classResourceKeys)) {
+                $classResourceKeys[] = get_class($instance);
+            }
 
             foreach ($classResourceKeys as $classResourceKey) {
                 if (isset($this->classResources[$classResourceKey])) {

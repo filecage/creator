@@ -45,15 +45,17 @@
 
         /**
          * @param mixed $injected
-         * @param string $resourceKey
+         * @param string ...$resourceKeys
          *
          * @return $this
          */
-        function with ($injected, $resourceKey = null) {
+        function with ($injected, ...$resourceKeys) {
             if (is_object($injected)) {
-                $this->injectionRegistry->registerClassResource($injected, $resourceKey);
-            } elseif ($resourceKey !== null) {
-                $this->injectionRegistry->registerPrimitiveResource($resourceKey, $injected);
+                $this->injectionRegistry->registerClassResource($injected, ...$resourceKeys);
+            } else {
+                foreach ($resourceKeys as $resourceKey) {
+                    $this->injectionRegistry->registerPrimitiveResource($resourceKey, $injected);
+                }
             }
 
             return $this;
