@@ -37,6 +37,10 @@
             $classResourceKeys[] = get_class($instance);
 
             foreach ($classResourceKeys as $classResourceKey) {
+                if (isset($this->classResources[$classResourceKey])) {
+                    continue;
+                }
+                
                 $this->classResources[$classResourceKey] = $resource;
             }
 
