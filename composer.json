@@ -13,7 +13,8 @@
         "issues": "https://github.com/filecage/creator/issues"
     },
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "tholabs/creator-interfaces": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0"
