@@ -4,6 +4,6 @@
 
     class InvalidRequirementClass {
 
-        function __construct(InexistentClass $inexistent) {}
+        function __construct(\InexistentClass $inexistent) {}
 
     }
