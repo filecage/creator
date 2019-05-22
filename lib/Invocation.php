@@ -101,8 +101,10 @@
             if (!$dependency->isPrimitive()) {
                 try {
                     return $this->getClassResource($dependency->getDependencyKey());
+                } catch (UnresolvableDependency $exception) {
+                    throw $exception->setParentInvokableName($this->invokable->getName()); // If it's already a UnresolvableDependency, just pass it with a new parent
                 } catch (Unresolvable $exception) {
-                    throw new UnresolvableDependency($dependency->getParameterName(), $dependency->getDependencyKey(), $this->invokable->getName());
+                    throw new UnresolvableDependency($dependency->getParameterName(), $dependency->getDependencyKey(), $this->invokable->getName(), null);
                 }
             }
 
@@ -140,7 +142,7 @@
                 return $this->resourceRegistry->getPrimitiveResource($resourceKey);
             }
 
-            throw new UnresolvableDependency($resourceKey, null, $this->invokable->getName());
+            throw new UnresolvableDependency($resourceKey, null, $this->invokable->getName(), null);
         }
 
     }

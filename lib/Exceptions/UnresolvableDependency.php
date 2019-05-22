@@ -17,19 +17,26 @@
         /**
          * @var string|null
          */
-        private $dependantClass;
+        private $invokableName;
+
+        /**
+         * @var string|null
+         */
+        private $parentInvokableName;
 
         /**
          * @param string $parameterName
          * @param string|null $dependencyClass
          * @param string|null $invokableName
+         * @param string|null $parentInvokableName
          */
-        function __construct (string $parameterName, ?string $dependencyClass, string $invokableName) {
+        function __construct (string $parameterName, ?string $dependencyClass, string $invokableName, ?string $parentInvokableName) {
             $this->parameterName = $parameterName;
             $this->dependencyClass = $dependencyClass;
-            $this->dependantClass = $invokableName;
+            $this->invokableName = $invokableName;
+            $this->parentInvokableName = $parentInvokableName;
 
-            parent::__construct("'{$invokableName}' demands {$this->formatDependency()} as '\${$parameterName}', but the resource is unknown");
+            parent::__construct($this->formatMessage());
         }
 
         /**
@@ -44,6 +51,35 @@
          */
         function getDependencyClass () : ?string {
             return $this->dependencyClass;
+        }
+
+        /**
+         * @param string $parentInvokableName
+         * @return UnresolvableDependency
+         */
+        function setParentInvokableName (string $parentInvokableName) : self {
+            $this->parentInvokableName = $parentInvokableName;
+            $this->message = $this->formatMessage();
+
+            return $this;
+        }
+
+        /**
+         * @return string
+         */
+        private function formatMessage () : string {
+            return "'{$this->invokableName}' demands {$this->formatDependency()} as '\${$this->parameterName}', but the resource is unknown{$this->formatParent()}";
+        }
+
+        /**
+         * @return string
+         */
+        private function formatParent () : string {
+            if ($this->parentInvokableName === null || $this->parentInvokableName === $this->invokableName) {
+                return '';
+            }
+
+            return " when resolving '{$this->parentInvokableName}'";
         }
 
         /**

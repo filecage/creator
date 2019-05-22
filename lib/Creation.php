@@ -104,7 +104,11 @@
          * @throws Unresolvable
          */
         private function createInstance(Creatable $creatable) {
-            return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
+            try {
+                return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
+            } catch (UnresolvableDependency $unresolvableDependency) {
+                throw $unresolvableDependency->setParentInvokableName($this->creatable->getName());
+            }
         }
 
         /**
