@@ -11,6 +11,7 @@
          *
          * @return Invokable
          * @throws Unresolvable
+         * @throws \ReflectionException
          */
         static function createFromCallable (callable $callable) : Invokable {
             if (is_object($callable)) {

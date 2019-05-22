@@ -5,8 +5,6 @@
     use Creator\Exceptions\InvalidFactory;
     use Creator\Exceptions\Unresolvable;
     use Creator\Interfaces\Factory;
-    use ReflectionException;
-    use ReflectionParameter;
 
     class Invocation {
 
@@ -97,7 +95,6 @@
          *
          * @return mixed|object
          * @throws Unresolvable
-         * @throws ReflectionException
          */
         private function resolveDependency (Dependency $dependency) {
             if (!$dependency->isPrimitive()) {
