@@ -2,8 +2,6 @@
 
     namespace Creator;
 
-    use Creator\Exceptions\Unresolvable;
-
     class ResourceRegistry {
 
         /**
@@ -137,16 +135,20 @@
 
         /**
          * @param string $resourceKey
+         * @return string
+         */
+        function hasPrimitiveResource (string $resourceKey) : string {
+            return array_key_exists($resourceKey, $this->primitiveResources);
+        }
+
+        /**
+         * @param string $resourceKey
          *
          * @return mixed
-         * @throws Unresolvable
+         * @throws UnresolvablePrimitive
          */
         function getPrimitiveResource ($resourceKey) {
-            if (!array_key_exists($resourceKey, $this->primitiveResources)) {
-                throw new Unresolvable('Tried to load dependency "' . $resourceKey . '" with unknown primitive resource');
-            }
-
-            return $this->primitiveResources[$resourceKey];
+            return $this->primitiveResources[$resourceKey] ?? null;
         }
 
         /**
@@ -156,8 +158,7 @@
          */
         function containsAnyOf (DependencyContainer $dependencyContainer) {
             foreach ($dependencyContainer->getDependencies() as $dependency) {
-                $class = $dependency->getClass();
-                if ($class && $this->getClassResource($class->getName())) {
+                if (!$dependency->isPrimitive() && $this->getClassResource($dependency->getDependencyKey())) {
                     return true;
                 }
             }

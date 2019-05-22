@@ -22,9 +22,9 @@
          */
         static function createWithUnknownActualType ($actualFactory, $class = null) {
             if (class_exists($actualFactory, false)) {
-                $actualType = sprintf("class '%s'", $actualFactory);
+                $actualType = sprintf("class `%s`", $actualFactory);
             } elseif (is_object($actualFactory)) {
-                $actualType = sprintf("instance of '%s'", get_class($actualFactory));
+                $actualType = sprintf("instance of `%s`", get_class($actualFactory));
             } else {
                 $actualType = gettype($actualFactory);
             }
@@ -64,6 +64,6 @@
          * @return string
          */
         private function createMessage () {
-            return sprintf('Trying to register unsupported factory type "%s" for class "%s"', $this->actualType, $this->class);
+            return sprintf('Trying to register unsupported factory type `%s` for class `%s`', $this->actualType, $this->class);
         }
     }

@@ -4,6 +4,7 @@
 
     use Creator\Exceptions\CreatorException;
     use Creator\Exceptions\Unresolvable;
+    use Creator\Exceptions\UnresolvableDependency;
     use Creator\Interfaces\Factory;
     use ReflectionException;
     use ReflectionClass;
@@ -27,7 +28,12 @@
          */
         function __construct ($className, ResourceRegistry $resourceRegistry, ResourceRegistry $injections = null) {
             $this->className = $className;
-            $this->creatable = new Creatable($this->className);
+            try {
+                $this->creatable = new Creatable($this->className);
+            } catch (\ReflectionException $reflectionException) {
+                throw new Unresolvable("Unable to load class: {$reflectionException->getMessage()}", $className);
+            }
+
             parent::__construct($this->creatable, $resourceRegistry, $injections);
         }
 
@@ -69,10 +75,8 @@
                     // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
                     $instance = $this->createInstance($creatable);
                 }
-            } catch (ReflectionException $e) {
-                $deferredException = new Unresolvable('Dependencies can not be resolved', $creatable->getReflectionClass()
-                    ->getName());
             } catch (Unresolvable $exception) {
+                /** @var Unresolvable $deferredException */
                 $deferredException = $exception;
             }
 
@@ -100,7 +104,11 @@
          * @throws Unresolvable
          */
         private function createInstance(Creatable $creatable) {
-            return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
+            try {
+                return ($creatable->getReflectionClass()->isInstantiable()) ? $this->createInstanceFromCreatable($creatable) : $this->createInstanceFromUninstantiableCreatable($creatable);
+            } catch (UnresolvableDependency $unresolvableDependency) {
+                throw $unresolvableDependency->setParentInvokableName($this->creatable->getName());
+            }
         }
 
         /**
@@ -127,11 +135,7 @@
          * @throws Unresolvable
          */
         private function createInstanceFromCreatable (Creatable $creatable) {
-            try {
-                return (new Invocation($creatable, $this->resourceRegistry, $this->injectionRegistry))->invoke();
-            } catch (ReflectionException $e) {
-                throw new Unresolvable('Dependencies can not be resolved: ' . $e->getMessage(), $creatable->getReflectionClass()->getName());
-            }
+            return (new Invocation($creatable, $this->resourceRegistry, $this->injectionRegistry))->invoke();
         }
 
         /**
@@ -147,12 +151,12 @@
 
             $factory = $this->createInstance($factory);
             if (!$factory instanceof Factory) {
-                throw new Unresolvable('Factory ' . $factoryReflector->getName() . ' does not implement required interface Creator\\Interfaces\\Factory', $reflector->getName());
+                throw new Unresolvable('Factory `' . $factoryReflector->getName() . '` does not implement required interface Creator\\Interfaces\\Factory', $reflector->getName());
             }
 
             $class = $factory->createInstance();
             if (!$reflector->isInstance($class)) {
-                throw new Unresolvable('Create method of factory ' . $factoryReflector->getName() . ' did not return instance of ' . $reflector->getName() . ' class', $reflector->getName());
+                throw new Unresolvable('Create method of factory `' . $factoryReflector->getName() . '` did not return instance of `' . $reflector->getName() . '` class', $reflector->getName());
             }
 
             return $class;
@@ -186,7 +190,7 @@
             try {
                 $factoryCreatable = new FactoryCreatable($className);
             } catch (ReflectionException $e) {
-                throw new Unresolvable('Can not load factory for uninstantiable class "' . $className . '": ' . $e->getMessage(), $reflector->getName());
+                throw new Unresolvable('Can not load factory for uninstantiable class `' . $className . '`: ' . $e->getMessage(), $reflector->getName());
             }
 
             return $factoryCreatable;

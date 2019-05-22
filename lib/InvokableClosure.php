@@ -11,6 +11,7 @@
          *
          * @return Invokable
          * @throws Unresolvable
+         * @throws \ReflectionException
          */
         static function createFromCallable (callable $callable) : Invokable {
             if (is_object($callable)) {
@@ -34,6 +35,13 @@
          */
         function __construct(\ReflectionFunction $invokableReflection) {
             parent::__construct($invokableReflection);
+        }
+
+        /**
+         * @return string
+         */
+        function getName () : string {
+            return $this->invokableReflection->getName();
         }
 
         /**

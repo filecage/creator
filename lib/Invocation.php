@@ -4,9 +4,8 @@
 
     use Creator\Exceptions\InvalidFactory;
     use Creator\Exceptions\Unresolvable;
+    use Creator\Exceptions\UnresolvableDependency;
     use Creator\Interfaces\Factory;
-    use ReflectionException;
-    use ReflectionParameter;
 
     class Invocation {
 
@@ -97,16 +96,20 @@
          *
          * @return mixed|object
          * @throws Unresolvable
-         * @throws ReflectionException
          */
         private function resolveDependency (Dependency $dependency) {
-            $class = $dependency->getClass();
-            if ($class) {
-                return $this->getClassResource($class->getName());
+            if (!$dependency->isPrimitive()) {
+                try {
+                    return $this->getClassResource($dependency->getDependencyKey());
+                } catch (UnresolvableDependency $exception) {
+                    throw $exception->setParentInvokableName($this->invokable->getName()); // If it's already a UnresolvableDependency, just pass it with a new parent
+                } catch (Unresolvable $exception) {
+                    throw new UnresolvableDependency($dependency->getParameterName(), $dependency->getDependencyKey(), $this->invokable->getName(), null);
+                }
             }
 
             try {
-                $primitiveResource = $this->getPrimitiveResource($dependency->getName());
+                $primitiveResource = $this->getPrimitiveResource($dependency->getParameterName());
 
                 return $primitiveResource;
             } catch (Unresolvable $e) {
@@ -133,11 +136,13 @@
          * @throws Unresolvable
          */
         private function getPrimitiveResource ($resourceKey) {
-            try {
+            if ($this->injectionRegistry->hasPrimitiveResource($resourceKey)) {
                 return $this->injectionRegistry->getPrimitiveResource($resourceKey);
-            } catch (Unresolvable $e) {
+            } elseif ($this->resourceRegistry->hasPrimitiveResource($resourceKey)) {
                 return $this->resourceRegistry->getPrimitiveResource($resourceKey);
             }
+
+            throw new UnresolvableDependency($resourceKey, null, $this->invokable->getName(), null);
         }
 
     }

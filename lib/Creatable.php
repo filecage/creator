@@ -15,13 +15,27 @@
         private $reflectionClass;
 
         /**
+         * @var string|null
+         */
+        private $creationMethodName;
+
+        /**
          * @param string $className
          * @param string $creationMethodName
+         * @throws \ReflectionException
          */
         function __construct ($className, $creationMethodName = null) {
             $this->className = $className;
             $this->reflectionClass = new \ReflectionClass($className);
+            $this->creationMethodName = $creationMethodName;
             parent::__construct($creationMethodName !== null ? $this->reflectionClass->getMethod($creationMethodName) : $this->reflectionClass->getConstructor());
+        }
+
+        /**
+         * @return string
+         */
+        function getName () : string {
+            return $this->className . '::' . ($this->creationMethodName ?? $this->reflectionClass->getConstructor()->getName()) . '()';
         }
 
         /**
