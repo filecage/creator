@@ -137,12 +137,20 @@
 
         /**
          * @param string $resourceKey
+         * @return string
+         */
+        function hasPrimitiveResource (string $resourceKey) : string {
+            return array_key_exists($resourceKey, $this->primitiveResources);
+        }
+
+        /**
+         * @param string $resourceKey
          *
          * @return mixed
          * @throws UnresolvablePrimitive
          */
         function getPrimitiveResource ($resourceKey) {
-            if (!array_key_exists($resourceKey, $this->primitiveResources)) {
+            if (!$this->hasPrimitiveResource($resourceKey)) {
                 throw new UnresolvablePrimitive($resourceKey);
             }
 
