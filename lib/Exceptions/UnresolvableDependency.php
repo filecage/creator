@@ -68,7 +68,7 @@
          * @return string
          */
         private function formatMessage () : string {
-            return "'{$this->invokableName}' demands {$this->formatDependency()} for parameter '\${$this->parameterName}' but the resource is unresolvable{$this->formatParent()}";
+            return "`{$this->invokableName}` demands {$this->formatDependency()} for parameter `\${$this->parameterName}` but the resource is unresolvable{$this->formatParent()}";
         }
 
         /**
@@ -79,7 +79,7 @@
                 return '';
             }
 
-            return " (inner dependency of '{$this->parentInvokableName}')";
+            return " (inner dependency of `{$this->parentInvokableName}`)";
         }
 
         /**
@@ -90,7 +90,7 @@
                 return 'a primitive resource';
             }
 
-            return "class '{$this->dependencyClass}'";
+            return "class `{$this->dependencyClass}`";
         }
 
     }

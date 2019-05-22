@@ -151,12 +151,12 @@
 
             $factory = $this->createInstance($factory);
             if (!$factory instanceof Factory) {
-                throw new Unresolvable('Factory ' . $factoryReflector->getName() . ' does not implement required interface Creator\\Interfaces\\Factory', $reflector->getName());
+                throw new Unresolvable('Factory `' . $factoryReflector->getName() . '` does not implement required interface Creator\\Interfaces\\Factory', $reflector->getName());
             }
 
             $class = $factory->createInstance();
             if (!$reflector->isInstance($class)) {
-                throw new Unresolvable('Create method of factory ' . $factoryReflector->getName() . ' did not return instance of ' . $reflector->getName() . ' class', $reflector->getName());
+                throw new Unresolvable('Create method of factory `' . $factoryReflector->getName() . '` did not return instance of `' . $reflector->getName() . '` class', $reflector->getName());
             }
 
             return $class;
@@ -190,7 +190,7 @@
             try {
                 $factoryCreatable = new FactoryCreatable($className);
             } catch (ReflectionException $e) {
-                throw new Unresolvable('Can not load factory for uninstantiable class "' . $className . '": ' . $e->getMessage(), $reflector->getName());
+                throw new Unresolvable('Can not load factory for uninstantiable class `' . $className . '`: ' . $e->getMessage(), $reflector->getName());
             }
 
             return $factoryCreatable;
