@@ -95,7 +95,7 @@
             $fulfillable = $creatable->getReflectionClass();
             if ($fulfillable->isInterface()) {
                 $verificationCallback = function(ClassResource $resource) use ($fulfillable) {
-                    return $resource->getReflection()->implementsInterface($fulfillable->getName());
+                    return $resource->implementsInterface($fulfillable->getName());
                 };
             } elseif ($fulfillable->isAbstract()) {
                 $verificationCallback = function(ClassResource $resource) use ($fulfillable) {

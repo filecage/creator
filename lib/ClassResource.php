@@ -39,10 +39,11 @@
         }
 
         /**
-         * @return \ReflectionClass
+         * @param string $interface
+         * @return bool
          */
-        function getReflection () {
-            return $this->reflection;
+        function implementsInterface (string $interface) : bool {
+            return $this->reflection->implementsInterface($interface);
         }
 
     }
