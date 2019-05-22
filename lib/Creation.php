@@ -4,6 +4,7 @@
 
     use Creator\Exceptions\CreatorException;
     use Creator\Exceptions\Unresolvable;
+    use Creator\Exceptions\UnresolvableDependency;
     use Creator\Interfaces\Factory;
     use ReflectionException;
     use ReflectionClass;
@@ -27,7 +28,12 @@
          */
         function __construct ($className, ResourceRegistry $resourceRegistry, ResourceRegistry $injections = null) {
             $this->className = $className;
-            $this->creatable = new Creatable($this->className);
+            try {
+                $this->creatable = new Creatable($this->className);
+            } catch (\ReflectionException $reflectionException) {
+                throw new Unresolvable("Unable to load class: {$reflectionException->getMessage()}", $className);
+            }
+
             parent::__construct($this->creatable, $resourceRegistry, $injections);
         }
 
