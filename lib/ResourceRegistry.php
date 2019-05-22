@@ -2,8 +2,6 @@
 
     namespace Creator;
     
-    use Creator\Exceptions\UnresolvablePrimitive;
-
     class ResourceRegistry {
 
         /**
