@@ -29,6 +29,11 @@
         }
 
         /**
+         * @return string
+         */
+        abstract function getName () : ?string;
+
+        /**
          * @return \ReflectionMethod
          */
         function getInvokableReflection () {

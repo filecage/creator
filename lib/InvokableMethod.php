@@ -19,6 +19,13 @@
         }
 
         /**
+         * @return string
+         */
+        function getName () : string {
+            return $this->invokableReflection->getDeclaringClass()->getName() . '::' . $this->invokableReflection->getName() . '()';
+        }
+
+        /**
          * @param array $args
          *
          * @return mixed|null

@@ -37,6 +37,13 @@
         }
 
         /**
+         * @return string
+         */
+        function getName () : string {
+            return $this->invokableReflection->getName();
+        }
+
+        /**
          * @param array $args
          *
          * @return mixed

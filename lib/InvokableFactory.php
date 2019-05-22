@@ -47,6 +47,13 @@
         }
 
         /**
+         * @return string
+         */
+        function getName () : ?string {
+            return $this->factoryCreatable->getName();
+        }
+
+        /**
          * @return DependencyContainer
          */
         function getDependencies () {
