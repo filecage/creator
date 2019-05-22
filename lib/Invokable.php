@@ -24,7 +24,7 @@
         /**
          * @param \ReflectionFunctionAbstract $invokableReflection
          */
-        function __construct (\ReflectionFunctionAbstract $invokableReflection = null) {
+        function __construct (?\ReflectionFunctionAbstract $invokableReflection) {
             $this->invokableReflection = $invokableReflection;
         }
 
