@@ -150,11 +150,7 @@
          * @throws UnresolvablePrimitive
          */
         function getPrimitiveResource ($resourceKey) {
-            if (!$this->hasPrimitiveResource($resourceKey)) {
-                throw new UnresolvablePrimitive($resourceKey);
-            }
-
-            return $this->primitiveResources[$resourceKey];
+            return $this->primitiveResources[$resourceKey] ?? null;
         }
 
         /**

@@ -133,11 +133,13 @@
          * @throws Unresolvable
          */
         private function getPrimitiveResource ($resourceKey) {
-            try {
+            if ($this->injectionRegistry->hasPrimitiveResource($resourceKey)) {
                 return $this->injectionRegistry->getPrimitiveResource($resourceKey);
-            } catch (Unresolvable $e) {
+            } elseif ($this->resourceRegistry->hasPrimitiveResource($resourceKey)) {
                 return $this->resourceRegistry->getPrimitiveResource($resourceKey);
             }
+
+            throw new UnresolvableDependency($resourceKey, null, $this->invokable->getName());
         }
 
     }
