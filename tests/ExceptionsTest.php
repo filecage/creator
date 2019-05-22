@@ -24,7 +24,7 @@
 
         function testShouldThrowExceptionIfClassRequiresInexistentDependency () {
             $this->expectException(UnresolvableDependency::class);
-            $this->expectExceptionMessage("'Creator\Tests\Mocks\InvalidRequirementClass::__construct()' demands class 'InexistantClass' as '\$inexistant', but the resource is unknown");
+            $this->expectExceptionMessage("'Creator\Tests\Mocks\InvalidRequirementClass::__construct()' demands class 'InexistantClass' for parameter '\$inexistant' but the resource is unresolvable");
 
             $this->creator->create(InvalidRequirementClass::class);
         }
@@ -45,28 +45,28 @@
 
         function testShouldThrowExceptionIfClassRequiresUnknownPrimitiveResource () {
             $this->expectException(UnresolvableDependency::class);
-            $this->expectExceptionMessage('\'Creator\Tests\Mocks\InvalidPrimitiveDependencyClass::__construct()\' demands a primitive resource as \'$unknownParameter\', but the resource is unknown');
+            $this->expectExceptionMessage('\'Creator\Tests\Mocks\InvalidPrimitiveDependencyClass::__construct()\' demands a primitive resource for parameter \'$unknownParameter\' but the resource is unresolvable');
 
             $this->creator->create(InvalidPrimitiveDependencyClass::class);
         }
 
         function testShouldThrowExceptionIfClassHasDependencyThatRequiresInexistentDependency () {
             $this->expectException(UnresolvableDependency::class);
-            $this->expectExceptionMessage("'Creator\Tests\Mocks\InvalidRequirementClass::__construct()' demands class 'InexistantClass' as '\$inexistant', but the resource is unknown when resolving 'Creator\Tests\Mocks\InvalidNestedRequirementClass::__construct()'");
+            $this->expectExceptionMessage("'Creator\Tests\Mocks\InvalidRequirementClass::__construct()' demands class 'InexistantClass' for parameter '\$inexistant' but the resource is unresolvable (inner dependency of 'Creator\Tests\Mocks\InvalidNestedRequirementClass::__construct()')");
 
             $this->creator->create(InvalidNestedRequirementClass::class);
         }
 
         function testShouldThrowExceptionIfClosureHasDependencyThatRequiresInexistentDependency () {
             $this->expectException(UnresolvableDependency::class);
-            $this->expectExceptionMessage("'Closure::__invoke()' demands class 'InexistantClass' as '\$inexistantClass', but the resource is unknown");
+            $this->expectExceptionMessage("'Closure::__invoke()' demands class 'InexistantClass' for parameter '\$inexistantClass' but the resource is unresolvable");
 
             $this->creator->invoke(function(\InexistantClass $inexistantClass){});
         }
 
         function testShouldThrowExceptionIfClosureHasNestedDependencyThatRequiresInexistentDependency () {
             $this->expectException(UnresolvableDependency::class);
-            $this->expectExceptionMessage("'Creator\Tests\Mocks\InvalidRequirementClass::__construct()' demands class 'InexistantClass' as '\$inexistant', but the resource is unknown when resolving 'Closure::__invoke()'");
+            $this->expectExceptionMessage("'Creator\Tests\Mocks\InvalidRequirementClass::__construct()' demands class 'InexistantClass' for parameter '\$inexistant' but the resource is unresolvable (inner dependency of 'Closure::__invoke()')");
 
             $this->creator->invoke(function(InvalidNestedRequirementClass $inexistantClass){});
         }
