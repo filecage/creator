@@ -5,14 +5,19 @@
     class Dependency {
 
         /**
-         * @var string
+         * @var bool
          */
-        private $name;
+        private $isPrimitive;
 
         /**
-         * @var \ReflectionClass
+         * @var string
          */
-        private $class;
+        private $parameterName;
+
+        /**
+         * @var string
+         */
+        private $dependencyKey;
 
         /**
          * @var bool
@@ -30,8 +35,16 @@
          * @return Dependency
          */
         static function createFromReflectionParameter(\ReflectionParameter $dependencyParameter) : Dependency {
-            $dependency = new static($dependencyParameter->getName());
-            $dependency->class = $dependencyParameter->getClass();
+            $isPrimitive = true;
+            $dependencyType = null;
+
+            $type = $dependencyParameter->getType();
+            if ($type !== null && $type->isBuiltin() === false) {
+                $dependencyType = $type->getName();
+                $isPrimitive = false;
+            }
+
+            $dependency = new static($isPrimitive, $dependencyParameter->getName(), $dependencyType);
 
             if ($dependencyParameter->isDefaultValueAvailable()) {
                 $dependency->isDefaultValueAvailable = true;
@@ -42,30 +55,31 @@
         }
 
         /**
-         * @param string $name
+         * @param string $parameterName
          * @param Creatable $creatable
          *
          * @return Dependency
          */
-        static function createFromCreatable (string $name, Creatable $creatable) : Dependency {
-            $dependency = new static($name);
-            $dependency->class = $creatable->getReflectionClass();
-
-            return $dependency;
+        static function createFromCreatable (string $parameterName, Creatable $creatable) : Dependency {
+            return new static(false, $parameterName, $creatable->getReflectionClass()->getName());
         }
 
         /**
-         * @param string $name
+         * @param bool $isPrimitive
+         * @param string $parameterName
+         * @param string $dependencyKey
          */
-        function __construct (string $name) {
-            $this->name = $name;
+        function __construct (bool $isPrimitive, string $parameterName, ?string $dependencyKey) {
+            $this->isPrimitive = $isPrimitive;
+            $this->parameterName = $parameterName;
+            $this->dependencyKey = $dependencyKey;
         }
 
         /**
          * @return string
          */
-        function getName () : string {
-            return $this->name;
+        function getParameterName () : string {
+            return $this->parameterName;
         }
 
         /**
@@ -83,10 +97,17 @@
         }
 
         /**
-         * @return null|\ReflectionClass
+         * @return bool
          */
-        function getClass () : ?\ReflectionClass {
-            return $this->class;
+        function isPrimitive () : bool {
+            return $this->isPrimitive;
+        }
+
+        /**
+         * @return string
+         */
+        function getDependencyKey () : ?string {
+            return $this->dependencyKey;
         }
 
     }

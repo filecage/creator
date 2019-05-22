@@ -100,13 +100,12 @@
          * @throws ReflectionException
          */
         private function resolveDependency (Dependency $dependency) {
-            $class = $dependency->getClass();
-            if ($class) {
-                return $this->getClassResource($class->getName());
+            if (!$dependency->isPrimitive()) {
+                    return $this->getClassResource($dependency->getDependencyKey());
             }
 
             try {
-                $primitiveResource = $this->getPrimitiveResource($dependency->getName());
+                $primitiveResource = $this->getPrimitiveResource($dependency->getParameterName());
 
                 return $primitiveResource;
             } catch (Unresolvable $e) {

@@ -158,8 +158,7 @@
          */
         function containsAnyOf (DependencyContainer $dependencyContainer) {
             foreach ($dependencyContainer->getDependencies() as $dependency) {
-                $class = $dependency->getClass();
-                if ($class && $this->getClassResource($class->getName())) {
+                if (!$dependency->isPrimitive() && $this->getClassResource($dependency->getDependencyKey())) {
                     return true;
                 }
             }
