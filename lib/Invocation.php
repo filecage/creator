@@ -4,6 +4,7 @@
 
     use Creator\Exceptions\InvalidFactory;
     use Creator\Exceptions\Unresolvable;
+    use Creator\Exceptions\UnresolvableDependency;
     use Creator\Interfaces\Factory;
 
     class Invocation {
@@ -98,7 +99,11 @@
          */
         private function resolveDependency (Dependency $dependency) {
             if (!$dependency->isPrimitive()) {
+                try {
                     return $this->getClassResource($dependency->getDependencyKey());
+                } catch (Unresolvable $exception) {
+                    throw new UnresolvableDependency($dependency->getParameterName(), $dependency->getDependencyKey(), $this->invokable->getName());
+                }
             }
 
             try {
