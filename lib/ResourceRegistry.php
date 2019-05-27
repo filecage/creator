@@ -145,7 +145,6 @@
          * @param string $resourceKey
          *
          * @return mixed
-         * @throws UnresolvablePrimitive
          */
         function getPrimitiveResource ($resourceKey) {
             return $this->primitiveResources[$resourceKey] ?? null;
