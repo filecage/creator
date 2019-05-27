@@ -6,18 +6,14 @@
     use Creator\Exceptions\Unresolvable;
     use Creator\Interfaces\Factory;
 
-    class Creator {
-
-        /**
-         * @var ResourceRegistry
-         */
-        private $resourceRegistry;
+    class Creator extends AbstractResourceRegistryAware {
 
         /**
          * @param ResourceRegistry $resourceRegistry
          */
         function __construct (ResourceRegistry $resourceRegistry = null) {
-            $this->resourceRegistry = ($resourceRegistry) ?: new ResourceRegistry();
+            parent::__construct(($resourceRegistry) ?: new ResourceRegistry());
+
         }
 
         /**
