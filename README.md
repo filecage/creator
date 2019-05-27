@@ -4,6 +4,7 @@ creator is a simple PHP dependency injection that works with typehints and Refle
 * [Installation](#installation)
 * [Testing](#testing)
 * [Basic Usage](#basic-usage)
+* [PSR-11 Container Usage](#psr-11-container-usage)
 * [Injected Instances](#injected-instances)
 * [Invoke Closures / Callables](#invoke-closures--callables)
 * [Factories](#factories)
@@ -42,6 +43,23 @@ assuming our `MyClass` looks like this:
     }
 ````
 Creator will walk up the dependency tree and resolve any class which has no known instance yet.
+
+## PSR-11 Container usage
+Creator supports the [PSR-11](https://www.php-fig.org/psr/psr-11/) `psr/container` standard.
+```php
+<?php
+
+    $container = new Creator\Container(new Creator\Creator());
+    $myInstance = $container->get(MyClass::class);
+```
+
+The `$container->has()` will return `true` if:
+* a primitive resource with given `$identifier` has been registered using `$creator->registerPrimitiveResource()`
+* a class resource with given `$identifier` has been registered using `$creator->registerClassResource()`
+* a class resource factory for `$identifier` has been registered using `$creator->registerFactory()`
+* `$identifier` is an interface or abstract class that can be fulfilled (because another instance implementing or inheriting has been registered earlier)
+
+It will not return `true` if a given `$identifier` _might be_ instantiable. 
 
 ## Injected Instances
 Creator is able to use an independent resource registry for a single creation process.
