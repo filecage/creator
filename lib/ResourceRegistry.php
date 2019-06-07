@@ -164,7 +164,7 @@
          * @return bool
          */
         function containsAnyOf (DependencyContainer $dependencyContainer) {
-            foreach ($dependencyContainer->getDependencies() as $dependency) {
+            foreach ($dependencyContainer->getFlatDependencyIterator() as $dependency) {
                 if (!$dependency->isPrimitive() && $this->getClassResource($dependency->getDependencyKey())) {
                     return true;
                 }
