@@ -15,7 +15,7 @@
          *
          * @return $this
          */
-        function addDependency (Dependency $dependency) {
+        function addDependency (Dependency $dependency) : self {
             $this->dependencies[] = $dependency;
 
             return $this;
@@ -24,7 +24,7 @@
         /**
          * @return Dependency[]
          */
-        function getDependencies () {
+        function getDependencies () : array {
             return $this->dependencies;
         }
 
@@ -33,7 +33,7 @@
          *
          * @return DependencyContainer
          */
-        function mergeWith (DependencyContainer $dependencyContainer) {
+        function mergeWith (DependencyContainer $dependencyContainer) : self {
             $clone = clone $this;
             $clone->dependencies = array_merge($clone->dependencies, array_filter($dependencyContainer->dependencies, function(Dependency $dependency) use ($clone){
                 return !in_array($dependency, $clone->dependencies);
