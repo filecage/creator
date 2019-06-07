@@ -35,6 +35,19 @@
         }
 
         /**
+         * @return \Generator
+         */
+        function getFlatDependencyIterator () : \Generator {
+            foreach ($this->dependencies as $dependency) {
+                yield $dependency;
+
+                if ($dependency->hasInnerDependencies()) {
+                    yield from $dependency->getInnerDependencies()->getFlatDependencyIterator();
+                }
+            }
+        }
+
+        /**
          * @param DependencyContainer $dependencyContainer
          *
          * @return DependencyContainer
