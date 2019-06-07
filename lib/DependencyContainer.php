@@ -7,8 +7,14 @@
         /**
          * @var Dependency[]
          */
-        private $dependencies = [];
+        private $dependencies;
 
+        /**
+         * @param Dependency[] $dependencies
+         */
+        function __construct (Dependency ...$dependencies) {
+            $this->dependencies = $dependencies;
+        }
 
         /**
          * @param Dependency $dependency
