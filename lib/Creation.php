@@ -73,7 +73,6 @@
             try {
                 // Does the registry contain a dependency that is required for this resource?
                 if ($registry->containsAnyOf($creatable->getDependencies())) {
-                    // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
                     $instance = $this->createInstance($creatable);
                 }
             } catch (Unresolvable $exception) {
