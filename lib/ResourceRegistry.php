@@ -78,6 +78,14 @@
 
         /**
          * @param string $classResourceKey
+         * @return bool
+         */
+        function hasFactoryForClassResource (string $classResourceKey) : bool {
+            return isset($this->factories[$classResourceKey]);
+        }
+
+        /**
+         * @param string $classResourceKey
          *
          * @return Invokable|null
          */

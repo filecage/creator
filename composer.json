@@ -2,6 +2,9 @@
     "name": "tholabs/creator",
     "description": "creator is a simple PHP dependency injection that works with typehints",
     "license": "MIT",
+    "provide": {
+        "psr/container-implementation": "1.0.0"
+    },
     "authors": [
         {
             "name": "David Beuchert",
@@ -15,7 +18,8 @@
     },
     "require": {
         "php": ">=7.2",
-        "tholabs/creator-interfaces": "^1.0"
+        "tholabs/creator-interfaces": "^1.0",
+        "psr/container": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0"

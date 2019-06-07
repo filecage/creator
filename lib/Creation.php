@@ -3,6 +3,7 @@
     namespace Creator;
 
     use Creator\Exceptions\CreatorException;
+    use Creator\Exceptions\Unreflectable;
     use Creator\Exceptions\Unresolvable;
     use Creator\Exceptions\UnresolvableDependency;
     use Creator\Interfaces\Factory;
@@ -31,7 +32,7 @@
             try {
                 $this->creatable = new Creatable($this->className);
             } catch (\ReflectionException $reflectionException) {
-                throw new Unresolvable("Unable to load class: {$reflectionException->getMessage()}", $className);
+                throw new Unreflectable($className, $reflectionException->getMessage());
             }
 
             parent::__construct($this->creatable, $resourceRegistry, $injections);
