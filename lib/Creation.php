@@ -30,7 +30,7 @@
         function __construct ($className, ResourceRegistry $resourceRegistry, ResourceRegistry $injections = null) {
             $this->className = $className;
             try {
-                $this->creatable = new Creatable($this->className);
+                $this->creatable = Creatable::createFromClassName($this->className);
             } catch (\ReflectionException $reflectionException) {
                 throw new Unreflectable($className, $reflectionException->getMessage());
             }

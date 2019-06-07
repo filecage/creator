@@ -8,7 +8,7 @@
          * @param string $className
          */
         function __construct ($className) {
-            parent::__construct($this->buildFactoryClassName($className));
+            parent::__construct(new \ReflectionClass($this->buildFactoryClassName($className)));
         }
 
         /**

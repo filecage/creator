@@ -24,7 +24,7 @@
             } elseif ($factory instanceof Factory) {
                 $invokable = InvokableClosure::createFromCallable([$factory, 'createInstance']);
             } elseif (is_string($factory) && class_exists($factory)) {
-                $factoryCreatable = new Creatable($factory);
+                $factoryCreatable = Creatable::createFromClassName($factory);
                 if (!$factoryCreatable->getReflectionClass()->implementsInterface(Factory::class)) {
                     throw new InvalidFactory(get_class($factory));
                 }
