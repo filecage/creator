@@ -17,6 +17,7 @@
          *
          * @return Invokable|InvokableFactory
          * @throws InvalidFactory
+         * @throws \ReflectionException
          */
         static function createFromAnyFactory ($factory) {
             if (is_callable($factory)) {
