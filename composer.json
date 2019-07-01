@@ -33,5 +33,8 @@
         "psr-4": {
             "Creator\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --testdox"
     }
 }
