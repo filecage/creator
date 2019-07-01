@@ -21,12 +21,22 @@
 
         /**
          * @param string $className
-         * @param string $creationMethodName
+         * @param string|null $creationMethodName
+         * @return Creatable
          * @throws \ReflectionException
          */
-        function __construct ($className, $creationMethodName = null) {
-            $this->className = $className;
-            $this->reflectionClass = new \ReflectionClass($className);
+        static function createFromClassName (string $className, string $creationMethodName = null) : self {
+            return new static(new \ReflectionClass($className), $creationMethodName);
+        }
+
+        /**
+         * @param \ReflectionClass $reflectionClass
+         * @param null $creationMethodName
+         * @throws \ReflectionException
+         */
+        function __construct (\ReflectionClass $reflectionClass, $creationMethodName = null) {
+            $this->className = $reflectionClass->getName();
+            $this->reflectionClass = $reflectionClass;
             $this->creationMethodName = $creationMethodName;
             parent::__construct($creationMethodName !== null ? $this->reflectionClass->getMethod($creationMethodName) : $this->reflectionClass->getConstructor());
         }

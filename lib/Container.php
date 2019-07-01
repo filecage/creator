@@ -69,7 +69,7 @@
                 return false;
             }
 
-            if ($this->resourceRegistry->findFulfillingInstance(new Creatable($identifier)) !== null) {
+            if ($this->resourceRegistry->findFulfillingInstance(Creatable::createFromClassName($identifier)) !== null) {
                 return true;
             }
 

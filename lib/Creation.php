@@ -30,7 +30,7 @@
         function __construct ($className, ResourceRegistry $resourceRegistry, ResourceRegistry $injections = null) {
             $this->className = $className;
             try {
-                $this->creatable = new Creatable($this->className);
+                $this->creatable = Creatable::createFromClassName($this->className);
             } catch (\ReflectionException $reflectionException) {
                 throw new Unreflectable($className, $reflectionException->getMessage());
             }
@@ -73,7 +73,6 @@
             try {
                 // Does the registry contain a dependency that is required for this resource?
                 if ($registry->containsAnyOf($creatable->getDependencies())) {
-                    // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
                     $instance = $this->createInstance($creatable);
                 }
             } catch (Unresolvable $exception) {
