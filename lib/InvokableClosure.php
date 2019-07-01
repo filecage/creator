@@ -19,9 +19,9 @@
             }
 
             if (is_array($callable) && count($callable) === 2) {
-                // todo: Creator should resolve the object if we know the class name
+                // todo: Creator should resolve the object if we know the class name (https://github.com/filecage/creator/issues/19)
                 if (!is_object($callable[0])) {
-                    throw new Unresolvable('Unable to handle invokation of object-context callable: no object given on callable index 0');
+                    throw new Unresolvable('Unable to handle invocation of object-context callable: no object given on callable index 0');
                 }
 
                 return new InvokableMethod(new \ReflectionMethod($callable[0], $callable[1]), $callable[0]);
