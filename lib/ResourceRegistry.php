@@ -53,6 +53,16 @@
 
         /**
          * @param string $classResourceKey
+         * @return $this
+         */
+        function resetClassResource ($classResourceKey) {
+            unset($this->classResources[$classResourceKey]);
+
+            return $this;
+        }
+
+        /**
+         * @param string $classResourceKey
          *
          * @return object
          */
