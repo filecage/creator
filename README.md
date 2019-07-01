@@ -86,8 +86,6 @@ Injecting instances is supported as well.
 If you have resources that can not be created without additional logic, but also should only be created once another component depends them, you can register a factory for this factory.
 A factory can be a callable, an instance of `Creator\Interfaces\Factory` or a class string of a Factory (see [lazy bound factories](#lazy-bound-factories)) and can be registered for any class resource, i.e. interfaces, abstracts or normal classes.
 
-*Please note* that factory classes share the interface with Factories for [uninstantiable class factories](#uninstantiable-classes) but are different features and are being called at different points in the creation order.
-
 ### Global Factories
 ````php
 <?php
@@ -198,15 +196,9 @@ In the example above, the instances of `ArbitraryClassWithSimpleClassDependency`
 ## Uninstantiable Classes
 ### Singletons
 Singletons can be resolved if they implement the `Creator\Interfaces\Singleton` interface.
+
 ### Abstracts, Interfaces
-If Creator stumbles upon an interface or an abstract class, it will try to:
-
-1. Look up the resource registry if any resource implements the interface / abstract class. First one is being served.
-2. Look up a factory by using the entities name + "Factory", i.e. the factory of `Foo\Bar\MyInterface` is `Foo\Bar\MyInterfaceFactory`
-
-#### Additional notes on Factory classes
-* A factory has to implement the `Creator\Interfaces\Factory` interface
-* Factories are being created via `Creator::create` and thus may require further dependencies
+If Creator stumbles upon an interface or an abstract class, it will try to look up the resource registry if any resource implements the interface / abstract class. First one is being served.
 
 ## Registering Resources
 ### Classes
