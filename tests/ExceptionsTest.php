@@ -6,8 +6,6 @@
     use Creator\Exceptions\Unresolvable;
     use Creator\Exceptions\UnresolvableDependency;
     use Creator\Tests\Mocks\InvalidClass;
-    use Creator\Tests\Mocks\InvalidFactoryInstanceTestUninstantiableClass;
-    use Creator\Tests\Mocks\InvalidFactoryTestUninstantiableClass;
     use Creator\Tests\Mocks\InvalidNestedRequirementClass;
     use Creator\Tests\Mocks\InvalidPrimitiveDependencyClass;
     use Creator\Tests\Mocks\InvalidRequirementClass;
@@ -27,20 +25,6 @@
             $this->expectExceptionMessage("`Creator\Tests\Mocks\InvalidRequirementClass::__construct()` demands class `InexistantClass` for parameter `\$inexistant` but the resource is unresolvable");
 
             $this->creator->create(InvalidRequirementClass::class);
-        }
-
-        function testShouldThrowExceptionIfFactoryDoesNotImplementInterface () {
-            $this->expectException(Unresolvable::class);
-            $this->expectExceptionMessageRegExp('/^Factory `\S+` does not implement required interface/');
-
-            $this->creator->create(InvalidFactoryTestUninstantiableClass::class);
-        }
-
-        function testShouldThrowExceptionIfFactoryDoesNotReturnRequestedInstance () {
-            $this->expectException(Unresolvable::class);
-            $this->expectExceptionMessageRegExp('/^Create method of factory `\S+` did not return instance/');
-
-            $this->creator->create(InvalidFactoryInstanceTestUninstantiableClass::class);
         }
 
         function testShouldThrowExceptionIfClassRequiresUnknownPrimitiveResource () {
