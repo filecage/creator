@@ -3,6 +3,7 @@
     namespace Creator;
 
     use Creator\Exceptions\CreatorException;
+    use Creator\Exceptions\Unreflectable;
     use Creator\Exceptions\Unresolvable;
     use Creator\Exceptions\UnresolvableDependency;
     use Creator\Interfaces\Factory;
@@ -29,9 +30,9 @@
         function __construct ($className, ResourceRegistry $resourceRegistry, ResourceRegistry $injections = null) {
             $this->className = $className;
             try {
-                $this->creatable = new Creatable($this->className);
+                $this->creatable = Creatable::createFromClassName($this->className);
             } catch (\ReflectionException $reflectionException) {
-                throw new Unresolvable("Unable to load class: {$reflectionException->getMessage()}", $className);
+                throw new Unreflectable($className, $reflectionException->getMessage());
             }
 
             parent::__construct($this->creatable, $resourceRegistry, $injections);
@@ -72,7 +73,6 @@
             try {
                 // Does the registry contain a dependency that is required for this resource?
                 if ($registry->containsAnyOf($creatable->getDependencies())) {
-                    // todo: ensure a recreation if ANY instance inside the dependency tree requires an injected  instance (#1)
                     $instance = $this->createInstance($creatable);
                 }
             } catch (Unresolvable $exception) {

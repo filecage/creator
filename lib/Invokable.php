@@ -42,6 +42,7 @@
 
         /**
          * @return DependencyContainer
+         * @throws \ReflectionException
          */
         function getDependencies () {
             if (!isset($this->dependencies)) {
@@ -53,6 +54,7 @@
 
         /**
          * @return DependencyContainer
+         * @throws \ReflectionException
          */
         private function collectDependencies () {
             $dependencies = new DependencyContainer();

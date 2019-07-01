@@ -78,6 +78,14 @@
 
         /**
          * @param string $classResourceKey
+         * @return bool
+         */
+        function hasFactoryForClassResource (string $classResourceKey) : bool {
+            return isset($this->factories[$classResourceKey]);
+        }
+
+        /**
+         * @param string $classResourceKey
          *
          * @return Invokable|null
          */
@@ -156,7 +164,7 @@
          * @return bool
          */
         function containsAnyOf (DependencyContainer $dependencyContainer) {
-            foreach ($dependencyContainer->getDependencies() as $dependency) {
+            foreach ($dependencyContainer->getFlatDependencyIterator() as $dependency) {
                 if (!$dependency->isPrimitive() && $this->getClassResource($dependency->getDependencyKey())) {
                     return true;
                 }
