@@ -35,6 +35,14 @@
         private $innerDependencies;
 
         /**
+         * Static memoization of class dependencies to speed up lookups for big trees in larger projects
+         * We're caching by class name as a class can not be overwritten
+         *
+         * @var Dependency[]
+         */
+        static private $dependencies = [];
+
+        /**
          * @param \ReflectionFunctionAbstract $reflectionFunction
          * @return \Generator
          * @throws \ReflectionException
@@ -62,11 +70,16 @@
             // If the parameter refers to a class, we have to find it's inner dependencies
             if ($type !== null && $type->isBuiltin() === false) {
                 $dependencyClassName = $type->getName();
-                if (!class_exists($dependencyClassName, false)) {
+
+                if (isset(static::$dependencies[$dependencyClassName])) {
+                    return static::$dependencies[$dependencyClassName];
+                } elseif (!class_exists($dependencyClassName, false)) {
                     $dependency = new static(false, $parameterName, $dependencyClassName, null);
                 } else {
                     $dependency = static::createFromCreatable($parameterName, new Creatable($dependencyParameter->getClass()));
+                    static::$dependencies[$dependencyClassName] = $dependency;
                 }
+
             } else {
                 $dependency = new static(true, $parameterName, null, null);
             }
