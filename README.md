@@ -141,6 +141,28 @@ Of course, you can also register a factory as injection:
 ````
 Injected factories overrule globally registered factories and even globally registered resources. However, they do not overrule injected resources. (Creation order routine is: Injected Instance -> Injected Factory -> Global Instance -> Global Factory -> Create Instance)
 
+### Self Factories
+To avoid the need of a global factory, classes can also implement the `Creator\Interfaces\SelfFactory` interface.
+All classes implementing this interface will not be built using their constructor; instead, they have to return a factory closure:
+
+```php
+class MyDependency implements Creator\Interfaces\SelfFactory {
+
+    static function createSelf () : callable {
+        return function(AnotherDependency $a) : MyDependency {
+            return new static($a->getFoo());
+        }
+    }
+    
+    function __construct (Foo $foo) {
+        $this->foo = $foo;
+    }
+    
+}
+```
+
+It is worth nothing here that not returning an instance of the class will throw an `InvalidFactoryResult` [exception](#exceptions).
+
 ### Lazy Bound Factories
 If you have factories that should not be created until they are required, you can register a lazy factory by using it's class name:
 
@@ -264,4 +286,5 @@ All exceptions derive from `Creator\Exceptions\CreatorException`. Use this class
 
 Additionally, there are more specific exceptions:
 * If Creator is unable to resolve a dependency, it will throw `Creator\Exceptions\Unresolvable`.
-* If you are registering a factory which is not a `callable` or an instance of / a class name of a class that implements `Creator\Interfaces\Factory`, it will throw `Creator\Exceptions\InvalidFactory`
+* If you are registering a factory which is not a `callable` or an instance of / a class name of a class that implements `Creator\Interfaces\Factory`, it will throw `Creator\Exceptions\InvalidFactory`.
+* If a self-factory returns a class which is not an instance of self, it will throw `Creator\Exceptions\InvalidFactoryResult`.
