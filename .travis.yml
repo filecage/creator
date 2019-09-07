@@ -11,7 +11,7 @@ env:
 php:
     - 7.2
     - 7.3
-    - 7.4
+    - 7.4snapshot
 
 install:
     - composer update --no-interaction --prefer-dist $DEPENDENCIES
