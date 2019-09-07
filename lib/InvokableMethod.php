@@ -10,10 +10,10 @@
         private $thisContext;
 
         /**
-         * @param \ReflectionMethod $invokableReflection
+         * @param \ReflectionFunctionAbstract $invokableReflection
          * @param object $thisContext
          */
-        function __construct(\ReflectionMethod $invokableReflection = null, $thisContext = null) {
+        function __construct(\ReflectionFunctionAbstract $invokableReflection = null, $thisContext = null) {
             $this->thisContext = $thisContext;
             parent::__construct($invokableReflection);
         }
