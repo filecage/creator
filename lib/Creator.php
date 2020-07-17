@@ -13,7 +13,6 @@
          */
         function __construct (ResourceRegistry $resourceRegistry = null) {
             parent::__construct(($resourceRegistry) ?: new ResourceRegistry());
-
         }
 
         /**
