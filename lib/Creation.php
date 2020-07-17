@@ -45,7 +45,7 @@
         function create () {
             $creatable = $this->creatable;
 
-            $instance = $this->createInstanceWithRegistry($this->className, $creatable, $this->injectionRegistry) ?? $this->createInstanceWithRegistry($this->className, $creatable, $this->resourceRegistry);
+            $instance = $this->createInstanceWithRegistry($this->className, $creatable, $this->injectionRegistry, true) ?? $this->createInstanceWithRegistry($this->className, $creatable, $this->resourceRegistry, false);
             if (!$instance) {
                 $instance = $this->createInstance($creatable);
                 $this->resourceRegistry->registerClassResource($instance);
@@ -58,26 +58,29 @@
          * @param string $className
          * @param Creatable $creatable
          * @param ResourceRegistry $registry
+         * @param bool $recreate Defines whether this registry qualifies for recreations (only for injected registry)
          *
          * @return mixed|object
          * @throws CreatorException
          * @throws Unresolvable
          */
-        private function createInstanceWithRegistry (string $className, Creatable $creatable, ResourceRegistry $registry) {
+        private function createInstanceWithRegistry (string $className, Creatable $creatable, ResourceRegistry $registry, bool $recreate) {
             // Does the registry already contain the resource?
             $instance = $registry->getClassResource($className) ?? $registry->findFulfillingInstance($creatable);
             if ($instance !== null) {
                 return $instance;
             }
 
-            try {
-                // Does the registry contain a dependency that is required for this resource?
-                if ($registry->containsAnyOf($creatable->getDependencies())) {
-                    $instance = $this->createInstance($creatable);
+            if ($recreate === true) {
+                try {
+                    // Does the registry contain a dependency that is required for this resource?
+                    if ($registry->containsAnyOf($creatable->getDependencies())) {
+                        $instance = $this->createInstance($creatable);
+                    }
+                } catch (Unresolvable $exception) {
+                    /** @var Unresolvable $deferredException */
+                    $deferredException = $exception;
                 }
-            } catch (Unresolvable $exception) {
-                /** @var Unresolvable $deferredException */
-                $deferredException = $exception;
             }
 
             // Does the registry contain a factory for this resource?
