@@ -100,4 +100,28 @@
             $this->assertSame($injectedSimpleClass, $extendedClass->getSimpleClass());
         }
 
+        function testExpectsGlobalFactoryOverGlobalCreationWithGloballyRegisteredDependency () {
+            $resourceRegistry = new ResourceRegistry();
+            $creator = $this->getWithRegistry($resourceRegistry);
+
+            // Pushing a dependency to the global registry forced Creator to create a new instance instead of using the
+            // factory in versions <= 1.3.0; this behaviour is wrong and only intended for injected instances to
+            // ensure that the result of the injected creation definitely contains the injected objects (i.e. the
+            // creation itself is dependency-tree aware)
+            $registrySimpleClass = new SimpleClass();
+            $resourceRegistry->registerClassResource($registrySimpleClass);
+
+            $factoryExtendedClass = null;
+            $creator->registerFactory(function(SimpleClass $simpleClass) use (&$factoryExtendedClass) {
+                return $factoryExtendedClass = new ExtendedClass($simpleClass);
+            }, ExtendedClass::class);
+
+            /** @var ExtendedClass $extendedClass */
+            $extendedClass = $creator->create(ExtendedClass::class);
+
+            $this->assertInstanceOf(ExtendedClass::class, $extendedClass);
+            $this->assertSame($factoryExtendedClass, $extendedClass);
+            $this->assertSame($registrySimpleClass, $extendedClass->getSimpleClass());
+        }
+
     }
