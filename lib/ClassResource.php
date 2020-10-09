@@ -39,6 +39,13 @@
         }
 
         /**
+         * @return \ReflectionClass
+         */
+        function getReflection () : \ReflectionClass {
+            return $this->reflection;
+        }
+
+        /**
          * @param string $interface
          * @return bool
          */

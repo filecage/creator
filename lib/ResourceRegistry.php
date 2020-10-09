@@ -76,6 +76,19 @@
 
         /**
          * @param string $classResourceKey
+         *
+         * @return null|\ReflectionClass
+         */
+        function getClassResourceReflection ($classResourceKey) : ?\ReflectionClass {
+            if (!isset($this->classResources[$classResourceKey])) {
+                return null;
+            }
+
+            return $this->classResources[$classResourceKey]->getReflection();
+        }
+
+        /**
+         * @param string $classResourceKey
          * @param Invokable $factory
          *
          * @return $this

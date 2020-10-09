@@ -29,8 +29,10 @@
          */
         function __construct ($className, ResourceRegistry $resourceRegistry, ResourceRegistry $injections = null) {
             $this->className = $className;
+            $resource = $resourceRegistry->getClassResourceReflection($className);
+
             try {
-                $this->creatable = Creatable::createFromClassName($this->className);
+                $this->creatable = ($resource !== null) ? new Creatable($resource) : Creatable::createFromClassName($this->className);
             } catch (\ReflectionException $reflectionException) {
                 throw new Unreflectable($className, $reflectionException->getMessage());
             }
