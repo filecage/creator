@@ -74,16 +74,17 @@
                 if (isset(static::$dependencies[$dependencyClassName])) {
                     return static::$dependencies[$dependencyClassName];
                 } elseif (!class_exists($dependencyClassName, false)) {
-                    $dependency = new static(false, $parameterName, $dependencyClassName, null);
+                    $dependency = new static(false, $dependencyParameter->getName(), $dependencyClassName, null);
                 } else {
-                    $dependency = static::createFromCreatable($parameterName, new Creatable($dependencyParameter->getClass()));
+                    $dependency = static::createFromCreatable($dependencyParameter->getName(), new Creatable($dependencyParameter->getClass()));
                     static::$dependencies[$dependencyClassName] = $dependency;
                 }
 
             } else {
-                $dependency = new static(true, $parameterName, null, null);
+                $dependency = new static(true, $parameterName, '__PARAM__' . $parameterName, null);
             }
 
+            // todo: call as late as possible
             if ($dependencyParameter->isDefaultValueAvailable()) {
                 $dependency->isDefaultValueAvailable = true;
                 $dependency->defaultValue = $dependencyParameter->getDefaultValue();
@@ -111,7 +112,7 @@
          * @param string $dependencyKey
          * @param DependencyContainer $innerDependencies
          */
-        function __construct (bool $isPrimitive, string $parameterName, ?string $dependencyKey, ?DependencyContainer $innerDependencies) {
+        function __construct (bool $isPrimitive, string $parameterName, string $dependencyKey, ?DependencyContainer $innerDependencies) {
             $this->isPrimitive = $isPrimitive;
             $this->parameterName = $parameterName;
             $this->dependencyKey = $dependencyKey;
@@ -149,7 +150,7 @@
         /**
          * @return string
          */
-        function getDependencyKey () : ?string {
+        function getDependencyKey () : string {
             return $this->dependencyKey;
         }
 
