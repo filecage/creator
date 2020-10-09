@@ -35,6 +35,12 @@
         private $innerDependencies;
 
         /**
+         * Used for fast dependency tree lookups
+         * @var bool[string]
+         */
+        private $innerDependenciesFlatHashes;
+
+        /**
          * Static memoization of class dependencies to speed up lookups for big trees in larger projects
          * We're caching by class name as a class can not be overwritten
          *
@@ -117,6 +123,11 @@
             $this->parameterName = $parameterName;
             $this->dependencyKey = $dependencyKey;
             $this->innerDependencies = $innerDependencies;
+            $this->innerDependenciesFlatHashes = [$dependencyKey => true];
+
+            if ($innerDependencies !== null) {
+                static::buildInnerDependencyFlatHashes($innerDependencies, $this->innerDependenciesFlatHashes);
+            }
         }
 
         /**
@@ -166,6 +177,37 @@
          */
         function getInnerDependencies () : ?DependencyContainer {
             return $this->innerDependencies;
+        }
+
+        /**
+         * @param string ...$dependencyKeys
+         *
+         * @return bool
+         */
+        function isDependencyInTree (string ...$dependencyKeys) : bool {
+            foreach ($dependencyKeys as $dependencyKey) {
+                if (isset($this->innerDependenciesFlatHashes[$dependencyKey])) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * @param DependencyContainer $dependencies
+         * @param array $flatHashMap
+         */
+        private static function buildInnerDependencyFlatHashes (DependencyContainer $dependencies, array &$flatHashMap) : void {
+            foreach ($dependencies->getDependencies() as $dependency) {
+                $flatHashMap[$dependency->getDependencyKey()] = true;
+                $innerDependencies = $dependency->getInnerDependencies();
+                if ($innerDependencies === null) {
+                    continue;
+                }
+
+                static::buildInnerDependencyFlatHashes($innerDependencies, $flatHashMap);
+            }
         }
 
     }
