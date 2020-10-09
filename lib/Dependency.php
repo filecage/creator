@@ -70,7 +70,6 @@
          * @throws \ReflectionException
          */
         static function createFromReflectionParameter(\ReflectionParameter $dependencyParameter) : Dependency {
-            $parameterName = $dependencyParameter->getName();
             $type = $dependencyParameter->getType();
 
             // If the parameter refers to a class, we have to find it's inner dependencies
@@ -87,6 +86,7 @@
                 }
 
             } else {
+                $parameterName = $dependencyParameter->getName();
                 $dependency = new static(true, $parameterName, '__PARAM__' . $parameterName, null);
             }
 
