@@ -121,21 +121,15 @@
          * @return object
          */
         function findFulfillingInstance (Creatable $creatable) {
-            $fulfillable = $creatable->getReflectionClass();
-            if ($fulfillable->isInterface()) {
-                $verificationCallback = function(ClassResource $resource) use ($fulfillable) {
-                    return $resource->implementsInterface($fulfillable->getName());
-                };
-            } elseif ($fulfillable->isAbstract()) {
-                $verificationCallback = function(ClassResource $resource) use ($fulfillable) {
-                    return $fulfillable->isInstance($resource->getInstance());
-                };
-            } else {
-                // unsupported uninstantiable
-                return null;
-            }
-
             foreach ($this->classResources as $resource) {
+                if (!isset($verificationCallback)) {
+                    // all reflection calls are expensive, so we're saving them for all registries that are empty anyway
+                    $verificationCallback = $this->createFulfillableAsserter($creatable);
+                    if ($verificationCallback === null) {
+                        return null; // not fulfillable, the class is neither an abstract nor an interface
+                    }
+                }
+
                 if ($verificationCallback($resource) === true) {
                     return $resource->getInstance();
                 }
@@ -209,6 +203,27 @@
             });
 
             return $clone;
+        }
+
+        /**
+         * @param Creatable $creatable
+         *
+         * @return callable|null
+         */
+        private function createFulfillableAsserter (Creatable $creatable) : ?callable {
+            $fulfillable = $creatable->getReflectionClass();
+            if ($fulfillable->isInterface()) {
+                return function(ClassResource $resource) use ($fulfillable) {
+                    return $resource->implementsInterface($fulfillable->getName());
+                };
+            } elseif ($fulfillable->isAbstract()) {
+                return function(ClassResource $resource) use ($fulfillable) {
+                    return $fulfillable->isInstance($resource->getInstance());
+                };
+            } else {
+                // unsupported uninstantiable
+                return null;
+            }
         }
 
         /**
