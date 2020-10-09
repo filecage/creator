@@ -46,6 +46,7 @@
         }
 
         /**
+         * @deprecated deprecated in favor of containsClassDependency
          * @return \Generator
          */
         function getFlatDependencyIterator () : \Generator {
