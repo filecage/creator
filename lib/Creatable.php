@@ -28,13 +28,28 @@
         private $useConstructor = true;
 
         /**
+         * To avoid some reflection calls
+         * @var array
+         */
+        private static $cache = [];
+
+        /**
          * @param string $className
          * @param string|null $creationMethodName
          * @return Creatable
          * @throws \ReflectionException
          */
         static function createFromClassName (string $className, string $creationMethodName = null) : self {
-            return new static(new \ReflectionClass($className), $creationMethodName);
+            $cacheKey = $className . '::' . ($creationMethodName ?? '__default');
+            $cache = static::$cache[$cacheKey] ?? null;
+            if ($cache) {
+                return $cache;
+            }
+
+            $creatable = new static(new \ReflectionClass($className), $creationMethodName);
+            static::$cache[$cacheKey] = $creatable;
+
+            return $creatable;
         }
 
         /**

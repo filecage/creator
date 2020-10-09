@@ -85,19 +85,6 @@
         }
 
         /**
-         * @param string $classResourceKey
-         *
-         * @return null|\ReflectionClass
-         */
-        function getClassResourceReflection ($classResourceKey) : ?\ReflectionClass {
-            if (!isset($this->classResources[$classResourceKey])) {
-                return null;
-            }
-
-            return $this->classResources[$classResourceKey]->getReflection();
-        }
-
-        /**
          * @return string[]
          */
         function getClassResourceKeys () : array {
