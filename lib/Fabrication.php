@@ -39,7 +39,7 @@
             $isInjectedInstance = false;
 
             while ($instance instanceof Invokable) {
-                $isInjectedInstance = $isInjectedInstance ?: $this->injectionRegistry->containsAnyOf($instance->getDependencies());
+                $isInjectedInstance = $isInjectedInstance ?: $instance->getDependencies()->containsClassDependency(...$this->injectionRegistry->getClassResourceKeys());
                 $invocation = new Invocation($instance, $this->resourceRegistry, $this->injectionRegistry);
                 $instance = $invocation->invoke();
             }

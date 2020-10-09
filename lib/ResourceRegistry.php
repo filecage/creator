@@ -10,6 +10,12 @@
         private $classResources = [];
 
         /**
+         * Keeps all resource keys for easier access without using `array_keys()`
+         * @var string[]
+         */
+        private $classResourceKeys = [];
+
+        /**
          * @var array
          */
         private $primitiveResources = [];
@@ -40,7 +46,8 @@
                 if (isset($this->classResources[$classResourceKey])) {
                     continue;
                 }
-                
+
+                $this->classResourceKeys[] = $classResourceKey;
                 $this->classResources[$classResourceKey] = $resource;
             }
 
@@ -57,6 +64,9 @@
          */
         function resetClassResource ($classResourceKey) {
             unset($this->classResources[$classResourceKey]);
+            unset($this->classResourceKeys[array_search($classResourceKey, $this->classResourceKeys)]);
+            // unsetting at the given index is slightly faster than copying the full array
+            // however it is dangerous if you can not be sure that the index exists (otherwise index 0 will be unset)
 
             return $this;
         }
@@ -85,6 +95,13 @@
             }
 
             return $this->classResources[$classResourceKey]->getReflection();
+        }
+
+        /**
+         * @return string[]
+         */
+        function getClassResourceKeys () : array {
+            return $this->classResourceKeys;
         }
 
         /**
@@ -178,10 +195,11 @@
         /**
          * @param DependencyContainer $dependencyContainer
          *
+         * @deprecated
          * @return bool
          */
         function containsAnyOf (DependencyContainer $dependencyContainer) {
-            return $dependencyContainer->containsClassDependency(...array_keys($this->classResources));
+            return $dependencyContainer->containsClassDependency(...$this->classResourceKeys);
         }
 
         /**
