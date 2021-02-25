@@ -35,6 +35,7 @@
         }
 
         /**
+         * @deprecated deprecated in favor of containsClassDependency
          * @return \Generator
          */
         function getFlatDependencyIterator () : \Generator {
@@ -45,6 +46,21 @@
                     yield from $dependency->getInnerDependencies()->getFlatDependencyIterator();
                 }
             }
+        }
+
+        /**
+         * @param string ...$classNames
+         *
+         * @return bool
+         */
+        function containsClassDependency (string ...$classNames) : bool {
+            foreach ($this->dependencies as $dependency) {
+                if ($dependency->isDependencyInTree(...$classNames)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /**

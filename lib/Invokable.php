@@ -57,15 +57,15 @@
          * @throws \ReflectionException
          */
         private function collectDependencies () {
-            $dependencies = new DependencyContainer();
             if (!$this->invokableReflection) {
-                return $dependencies;
+                return new DependencyContainer();
             }
 
+            $dependencies = [];
             foreach ($this->invokableReflection->getParameters() as $parameter) {
-                $dependencies->addDependency(Dependency::createFromReflectionParameter($parameter));
+                $dependencies[] = Dependency::createFromReflectionParameter($parameter);
             }
 
-            return $dependencies;
+            return new DependencyContainer(...$dependencies);
         }
     }

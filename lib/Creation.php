@@ -29,6 +29,7 @@
          */
         function __construct ($className, ResourceRegistry $resourceRegistry, ResourceRegistry $injections = null) {
             $this->className = $className;
+
             try {
                 $this->creatable = Creatable::createFromClassName($this->className);
             } catch (\ReflectionException $reflectionException) {
@@ -74,7 +75,7 @@
             if ($recreate === true) {
                 try {
                     // Does the registry contain a dependency that is required for this resource?
-                    if ($registry->containsAnyOf($creatable->getDependencies())) {
+                    if ($creatable->getDependencies()->containsClassDependency(...$registry->getClassResourceKeys())) {
                         $instance = $this->createInstance($creatable);
                     }
                 } catch (Unresolvable $exception) {

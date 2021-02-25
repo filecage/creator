@@ -35,6 +35,12 @@
         private $innerDependencies;
 
         /**
+         * Used for fast dependency tree lookups
+         * @var bool[string]
+         */
+        private $innerDependenciesFlatHashes;
+
+        /**
          * Static memoization of class dependencies to speed up lookups for big trees in larger projects
          * We're caching by class name as a class can not be overwritten
          *
@@ -64,7 +70,6 @@
          * @throws \ReflectionException
          */
         static function createFromReflectionParameter(\ReflectionParameter $dependencyParameter) : Dependency {
-            $parameterName = $dependencyParameter->getName();
             $type = $dependencyParameter->getType();
 
             // If the parameter refers to a class, we have to find it's inner dependencies
@@ -74,16 +79,18 @@
                 if (isset(static::$dependencies[$dependencyClassName])) {
                     return static::$dependencies[$dependencyClassName];
                 } elseif (!class_exists($dependencyClassName, false)) {
-                    $dependency = new static(false, $parameterName, $dependencyClassName, null);
+                    $dependency = new static(false, $dependencyParameter->getName(), $dependencyClassName, null);
                 } else {
-                    $dependency = static::createFromCreatable($parameterName, new Creatable($dependencyParameter->getClass()));
+                    $dependency = static::createFromCreatable($dependencyParameter->getName(), new Creatable($dependencyParameter->getClass()));
                     static::$dependencies[$dependencyClassName] = $dependency;
                 }
 
             } else {
-                $dependency = new static(true, $parameterName, null, null);
+                $parameterName = $dependencyParameter->getName();
+                $dependency = new static(true, $parameterName, '__PARAM__' . $parameterName, null);
             }
 
+            // todo: call as late as possible
             if ($dependencyParameter->isDefaultValueAvailable()) {
                 $dependency->isDefaultValueAvailable = true;
                 $dependency->defaultValue = $dependencyParameter->getDefaultValue();
@@ -111,11 +118,16 @@
          * @param string $dependencyKey
          * @param DependencyContainer $innerDependencies
          */
-        function __construct (bool $isPrimitive, string $parameterName, ?string $dependencyKey, ?DependencyContainer $innerDependencies) {
+        function __construct (bool $isPrimitive, string $parameterName, string $dependencyKey, ?DependencyContainer $innerDependencies) {
             $this->isPrimitive = $isPrimitive;
             $this->parameterName = $parameterName;
             $this->dependencyKey = $dependencyKey;
             $this->innerDependencies = $innerDependencies;
+            $this->innerDependenciesFlatHashes = [$dependencyKey => true];
+
+            if ($innerDependencies !== null) {
+                static::buildInnerDependencyFlatHashes($innerDependencies, $this->innerDependenciesFlatHashes);
+            }
         }
 
         /**
@@ -149,7 +161,7 @@
         /**
          * @return string
          */
-        function getDependencyKey () : ?string {
+        function getDependencyKey () : string {
             return $this->dependencyKey;
         }
 
@@ -165,6 +177,37 @@
          */
         function getInnerDependencies () : ?DependencyContainer {
             return $this->innerDependencies;
+        }
+
+        /**
+         * @param string ...$dependencyKeys
+         *
+         * @return bool
+         */
+        function isDependencyInTree (string ...$dependencyKeys) : bool {
+            foreach ($dependencyKeys as $dependencyKey) {
+                if (isset($this->innerDependenciesFlatHashes[$dependencyKey])) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * @param DependencyContainer $dependencies
+         * @param array $flatHashMap
+         */
+        private static function buildInnerDependencyFlatHashes (DependencyContainer $dependencies, array &$flatHashMap) : void {
+            foreach ($dependencies->getDependencies() as $dependency) {
+                $flatHashMap[$dependency->getDependencyKey()] = true;
+                $innerDependencies = $dependency->getInnerDependencies();
+                if ($innerDependencies === null) {
+                    continue;
+                }
+
+                static::buildInnerDependencyFlatHashes($innerDependencies, $flatHashMap);
+            }
         }
 
     }
