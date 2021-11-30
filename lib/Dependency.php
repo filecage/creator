@@ -90,7 +90,8 @@
                 } elseif (!class_exists($dependencyClassName, false)) {
                     $dependency = new static(false, $dependencyParameter->getName(), $dependencyClassName, null);
                 } else {
-                    $dependency = static::createFromCreatable($dependencyParameter->getName(), new Creatable($dependencyParameter->getClass()));
+                    $dependencyClass = new \ReflectionClass($dependencyParameter->getType()->getName());
+                    $dependency = static::createFromCreatable($dependencyParameter->getName(), new Creatable($dependencyClass));
                     static::$dependencies[$dependencyClassName] = $dependency;
                 }
 
