@@ -59,14 +59,14 @@
 
         function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToGlobalRegistry () {
             $this->expectException(InvalidFactory::class);
-            $this->expectExceptionMessageRegExp('/^Trying to register unsupported factory type `.+` for class `.+`$/');
+            $this->expectDeprecationMessageMatches('/^Trying to register unsupported factory type `.+` for class `.+`$/');
 
             $this->creator->registerFactory(null, SimpleClass::class);
         }
 
         function testShouldThrowInvalidFactoryExceptionWhenRegisteringNullToInjectedRegistry () {
             $this->expectException(InvalidFactory::class);
-            $this->expectExceptionMessageRegExp('/^Trying to register unsupported factory type `.+` for class `.+`$/');
+            $this->expectDeprecationMessageMatches('/^Trying to register unsupported factory type `.+` for class `.+`$/');
 
             $this->creator->createInjected(SimpleClass::class)->withFactory(null, SimpleClass::class);
         }
