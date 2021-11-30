@@ -5,6 +5,7 @@
     use Creator\Exceptions\InvalidFactory;
     use Creator\Exceptions\Unresolvable;
     use Creator\Exceptions\UnresolvableDependency;
+    use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\InvalidClass;
     use Creator\Tests\Mocks\InvalidNestedRequirementClass;
     use Creator\Tests\Mocks\InvalidPrimitiveDependencyClass;
@@ -68,6 +69,17 @@
             $this->expectExceptionMessageRegExp('/^Trying to register unsupported factory type `.+` for class `.+`$/');
 
             $this->creator->createInjected(SimpleClass::class)->withFactory(null, SimpleClass::class);
+        }
+
+        function testShouldThrowUnresolvableExceptionWhenUsingUnionTypes () {
+            if (version_compare(PHP_VERSION, '8.0.0', '<')) {
+                $this->markTestSkipped('Union Types are only relevant for PHP versions >= 8.0.0');
+            }
+
+            $this->expectException(Unresolvable::class);
+            $this->expectDeprecationMessage('Union Types are unsupported in this version of Creator');
+
+            include 'ExceptionsTestPhp8Addition.php';
         }
 
 

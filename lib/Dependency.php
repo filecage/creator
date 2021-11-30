@@ -2,6 +2,9 @@
 
     namespace Creator;
 
+    use Creator\Exceptions\Unresolvable;
+    use Creator\Exceptions\UnresolvableDependency;
+
     class Dependency {
 
         /**
@@ -68,9 +71,15 @@
          *
          * @return Dependency
          * @throws \ReflectionException
+         * @throws Unresolvable
          */
         static function createFromReflectionParameter(\ReflectionParameter $dependencyParameter) : Dependency {
             $type = $dependencyParameter->getType();
+
+            // TODO: Find a way to support Union types
+            if ($type !== null && get_class($type) === 'ReflectionUnionType') {
+                throw new Unresolvable("Union Types are unsupported in this version of Creator for parameter `{$dependencyParameter->getName()}` of function `{$dependencyParameter->getDeclaringFunction()->getName()}`");
+            }
 
             // If the parameter refers to a class, we have to find it's inner dependencies
             if ($type !== null && $type->isBuiltin() === false) {
