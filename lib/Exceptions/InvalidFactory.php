@@ -21,7 +21,7 @@
          * @return InvalidFactory
          */
         static function createWithUnknownActualType ($actualFactory, $class = null) {
-            if (class_exists($actualFactory, false)) {
+            if (is_string($actualFactory) && class_exists($actualFactory, false)) {
                 $actualType = sprintf("class `%s`", $actualFactory);
             } elseif (is_object($actualFactory)) {
                 $actualType = sprintf("instance of `%s`", get_class($actualFactory));
