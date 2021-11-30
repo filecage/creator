@@ -1,0 +1,28 @@
+name: PHP Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php: [ "7.2", "7.3", "7.4" ]
+        composer: [ "", "--prefer-lowest --prefer-stable" ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ matrix.php }}"
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-progress --no-suggest --no-interaction ${{ matrix.composer }}
+
+      - name: Run Tests
+        run: vendor/bin/phpunit --testdox
