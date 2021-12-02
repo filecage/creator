@@ -16,13 +16,14 @@
         }
 
         /**
-         * @param string $className
+         * @template className
+         * @param class-string<className> $className
          * @param bool $forceInstance Whether the class will be loaded from (or stored to) registry
          *
          * @throws Unresolvable
-         * @return object
+         * @return className
          */
-        function create ($className, $forceInstance = false) {
+        function create ($className, $forceInstance = false) : object {
             return (new Creation($className, ($forceInstance) ? $this->resourceRegistry->cloneWithout($className) : $this->resourceRegistry))->create();
         }
 
