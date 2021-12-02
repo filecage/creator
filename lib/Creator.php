@@ -23,7 +23,7 @@
          * @throws Unresolvable
          * @return className
          */
-        function create ($className, $forceInstance = false) : object {
+        function create ($className, $forceInstance = false) {
             return (new Creation($className, ($forceInstance) ? $this->resourceRegistry->cloneWithout($className) : $this->resourceRegistry))->create();
         }
 
