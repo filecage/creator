@@ -51,7 +51,7 @@
          * @return bool
          * @throws \ReflectionException
          */
-        function has ($identifier) {
+        function has ($identifier) : bool {
             if ($this->resourceRegistry->hasPrimitiveResource($identifier)) {
                 return true;
             }
