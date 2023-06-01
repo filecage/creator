@@ -15,6 +15,11 @@
         protected $class;
 
         /**
+         * @var string|null
+         */
+        private $additionalMessage;
+
+        /**
          * @param mixed $actualFactory
          * @param string $class
          *
@@ -36,11 +41,12 @@
          * @param string $actualType
          * @param string $class
          */
-        function __construct ($actualType, $class = null) {
+        function __construct ($actualType, $class = null, string $additionalMessage = null) {
             $this->actualType = $actualType;
             $this->class = $class;
+            $this->additionalMessage = $additionalMessage;
 
-            parent::__construct($this->createMessage());
+            parent::__construct($this->createMessage($additionalMessage));
         }
 
         /**
@@ -55,7 +61,7 @@
             }
 
             $this->class = $class;
-            $this->message = $this->createMessage();
+            $this->message = $this->createMessage($this->additionalMessage);
 
             return $this;
         }
@@ -63,7 +69,12 @@
         /**
          * @return string
          */
-        private function createMessage () {
-            return sprintf('Trying to register unsupported factory type `%s` for class `%s`', $this->actualType, $this->class);
+        private function createMessage (?string $additionalMessage = null) {
+            $message = sprintf('Trying to register unsupported factory type `%s` for class `%s`', $this->actualType, $this->class);
+            if ($additionalMessage !== null) {
+                $message .= " ({$additionalMessage})";
+            }
+
+            return $message;
         }
     }
