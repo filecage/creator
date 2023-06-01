@@ -5,6 +5,7 @@
     use Creator\Exceptions\InvalidFactory;
     use Creator\Exceptions\Unresolvable;
     use Creator\Exceptions\UnresolvableDependency;
+    use Creator\Tests\Mocks\AnotherSimpleClass;
     use Creator\Tests\Mocks\ExtendedClass;
     use Creator\Tests\Mocks\InvalidClass;
     use Creator\Tests\Mocks\InvalidNestedRequirementClass;
@@ -69,6 +70,12 @@
             $this->expectDeprecationMessageMatches('/^Trying to register unsupported factory type `.+` for class `.+`$/');
 
             $this->creator->createInjected(SimpleClass::class)->withFactory(null, SimpleClass::class);
+        }
+
+        function testShouldThrowInvalidFactoryWhenRegisteringFactoryThatDoesNotImplementFactoryInterface () {
+            $this->expectException(InvalidFactory::class);
+            $this->expectExceptionMessage('Trying to register unsupported factory type `Creator\Tests\Mocks\AnotherSimpleClass` for class `Creator\Tests\Mocks\SimpleClass` (Factory does not implement Creator\Interfaces\Factory interface)');
+            $this->creator->createInjected(ExtendedClass::class)->withFactory(AnotherSimpleClass::class, SimpleClass::class);
         }
 
         function testShouldThrowUnresolvableExceptionWhenUsingUnionTypes () {

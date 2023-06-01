@@ -13,7 +13,7 @@
         private $factoryCreatable;
 
         /**
-         * @param $factory
+         * @param class-string|string|callable|Factory $factory
          *
          * @return Invokable|InvokableFactory
          * @throws InvalidFactory
@@ -27,7 +27,7 @@
             } elseif (is_string($factory) && class_exists($factory)) {
                 $factoryCreatable = Creatable::createFromClassName($factory);
                 if (!$factoryCreatable->getReflectionClass()->implementsInterface(Factory::class)) {
-                    throw new InvalidFactory(get_class($factory));
+                    throw new InvalidFactory($factory, null, 'Factory does not implement ' . Factory::class . ' interface');
                 }
 
                 $invokable = new InvokableFactory($factoryCreatable);
